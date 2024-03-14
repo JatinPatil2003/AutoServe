@@ -59,7 +59,7 @@ def generate_launch_description():
     world = os.path.join(
         autoserve_gazebo_dir,
         'worlds',
-        'cafe.world'
+        'newcafe.world'
     )
 
     start_gazebo_server = IncludeLaunchDescription(

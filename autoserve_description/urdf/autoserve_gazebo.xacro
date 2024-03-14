@@ -2,30 +2,49 @@
 
 <robot name="autoserve" xmlns:xacro="http://ros.org/wiki/xacro">
 
-<xacro:property name="base_link" value="Gazebo/Red" />
+<xacro:property name="base_link" value="Gazebo/FlatBlack" />
 <xacro:property name="wheels" value="Gazebo/Black" />
 <xacro:property name="imu" value="Gazebo/PurpleGlow" />
 <xacro:property name="lidar" value="Gazebo/BlueGlow" />
 <xacro:property name="depth_cam" value="Gazebo/TurquoiseGlow" />
-<xacro:property name="plate" value="Gazebo/Green" />
+
+  <transmission name="wheel_right_transmission">
+    <plugin>transmission_interface/SimpleTransmission</plugin>
+    <actuator name="wheel_right_motor" role="actuator_right"/>
+    <joint name="base2right"    role="joint_right">
+      <mechanical_reduction>1.0</mechanical_reduction>
+    </joint>
+  </transmission>
+
+  <transmission name="wheel_left_transmission">
+    <plugin>transmission_interface/SimpleTransmission</plugin>
+    <actuator name="wheel_left_motor" role="actuator_left"/>
+    <joint name="base2left"    role="joint_left">
+      <mechanical_reduction>1.0</mechanical_reduction>
+    </joint>
+  </transmission>
 
   <!-- Wheels -->
-  <gazebo reference="left_wheel">
+  <gazebo reference="left_wheel_1">
     <material>${wheels}</material>
-    <mu1>1000.0</mu1>
-    <mu2>1000.0</mu2>
-    <maxContacts>1</maxContacts>
-    <selfCollide>true</selfCollide>
-    <gravity>true</gravity>
+    <mu1>1000000000000000.0</mu1>
+    <mu2>1000000000000000.0</mu2>
+    <kp>1000000000000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
   </gazebo>
 
-  <gazebo reference="right_wheel">
+  <gazebo reference="right_wheel_1">
     <material>${wheels}</material>
-    <mu1>1000.0</mu1>
-    <mu2>1000.0</mu2>
-    <maxContacts>1</maxContacts>
-    <selfCollide>true</selfCollide>
-    <gravity>true</gravity>
+    <mu1>1000000000000000.0</mu1>
+    <mu2>1000000000000000.0</mu2>
+    <kp>1000000000000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
   </gazebo>
     
   <!-- Caster Wheels -->
@@ -33,74 +52,60 @@
     <material>${base_link}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
-    <maxContacts>1</maxContacts>
-    <selfCollide>true</selfCollide>
-    <gravity>true</gravity>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
   </gazebo>
 
-  <gazebo reference="base_footprint">
-    <mu1>0.1</mu1>
-    <mu2>0.1</mu2>
-    <maxContacts>1</maxContacts>
-  </gazebo>
-
-  <gazebo reference="depth_camera_1">
+  <gazebo reference="camera_link">
     <material>${depth_cam}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
   </gazebo>
 
-  <gazebo reference="depth_camera_2">
-    <material>${depth_cam}</material>
-    <mu1>0.1</mu1>
-    <mu2>0.1</mu2>
-  </gazebo>
-
-  <gazebo reference="ydlidar">
+  <gazebo reference="lidar_1">
     <material>${lidar}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
   </gazebo>
 
-  <gazebo reference="imu">
+  <gazebo reference="imu_1">
     <material>${imu}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
-  </gazebo>
-
-  <gazebo reference="plate_1">
-    <material>${plate}</material>
-    <mu1>0.1</mu1>
-    <mu2>0.1</mu2>
-  </gazebo>
-
-  <gazebo reference="plate_2">
-    <material>${plate}</material>
-    <mu1>0.1</mu1>
-    <mu2>0.1</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
   </gazebo>
     
-  <!-- <gazebo>
-    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
-      <robot_param>robot_description</robot_param>
-      <robot_param_node>robot_state_publisher</robot_param_node>
-      <parameters>$(find autoserve_controller)/config/autoserve_controllers.yaml</parameters>
-    </plugin>
-  </gazebo> -->
-
   <gazebo>
     <plugin name="diff_drive_control" filename="libgazebo_ros_diff_drive.so">
 
+      <!-- Update rate in Hz -->
       <update_rate>50</update_rate>
 
-      <left_joint>base2leftw</left_joint>
-      <right_joint>base2rightw</right_joint>
+      <!-- wheels -->
+      <left_joint>base2left</left_joint>
+      <right_joint>base2right</right_joint>
 
-      <wheel_separation>0.34</wheel_separation>
-      <wheel_diameter>0.1</wheel_diameter>
+      <!-- kinematics -->
+      <wheel_separation>0.21</wheel_separation>
+      <wheel_diameter>0.08</wheel_diameter>
 
+      <!-- input -->
       <command_topic>cmd_vel</command_topic>
 
+      <!-- output -->
       <publish_odom>true</publish_odom>
       <publish_odom_tf>true</publish_odom_tf>
       <publish_wheel_tf>true</publish_wheel_tf>
@@ -112,9 +117,9 @@
     </plugin>
   </gazebo>
 
-  <gazebo reference="imu">
+  <gazebo reference="imu_1">
     <gravity>true</gravity>
-    <sensor name="imu" type="imu">
+    <sensor name="imu_1" type="imu">
       <always_on>true</always_on>
       <update_rate>30</update_rate>
       <visualize>true</visualize>
@@ -122,12 +127,12 @@
         <ros>
           <remapping>~/out:=imu</remapping>
         </ros>
-        <frame_name>imu</frame_name>
+        <frame_name>imu_1</frame_name>
       </plugin>
     </sensor>
   </gazebo>
 
-  <gazebo reference="ydlidar">
+  <gazebo reference="lidar_1">
     <sensor type="ray" name="head_hokuyo_sensor">
       <pose>0 0 0 0 0 0</pose>
       <visualize>false</visualize>
@@ -142,33 +147,41 @@
           </horizontal>
         </scan>
         <range>
-          <min>0.5</min>
+          <min>0.10</min>
           <max>30.0</max>
           <resolution>0.01</resolution>
         </range>
         <noise>
           <type>gaussian</type>
+          <!-- Noise parameters based on published spec for Hokuyo laser
+               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+               reading. -->
           <mean>0.0</mean>
           <stddev>0.01</stddev>
         </noise>
       </ray>
       <plugin name="my_ray_sensor_plugin" filename="libgazebo_ros_ray_sensor.so">
         <ros>
+          <!-- Configure namespace and remap to publish to /ray/pointcloud2 -->
           <remapping>~/out:=scan</remapping>
         </ros>
+        <!-- Output as a PointCloud2, see above for other types -->
         <output_type>sensor_msgs/LaserScan</output_type>
+        <!-- Clip intensity values so all are above 100, optional -->
         <min_intensity>100.0</min_intensity>
-        <frame_name>ydlidar</frame_name>
+        <!-- Frame id for header of output, defaults to sensor's parent link name -->
+        <frame_name>lidar_1</frame_name>
       </plugin>
     </sensor>
   </gazebo>
 
-  <gazebo reference="depth_camera_1">
-    <sensor name="camera_1" type="depth">
+  <gazebo reference="camera_link">
+    <sensor name="camera" type="depth">
       <pose> 0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>60.0</update_rate>
-      <camera name="depth_camera_1">
+      <camera name="camera_link">
         <horizontal_fov>1.047198</horizontal_fov>
         <image>
           <width>640</width>
@@ -180,11 +193,16 @@
           <far>10</far>
         </clip>
       </camera>
-      <plugin name="depth_camera_controller_1" filename="libgazebo_ros_camera.so">
+      <plugin name="depth_camera_controller" filename="libgazebo_ros_camera.so">
+        <!-- <ros>
+          <remapping>/camera/camera_info:=/camera/rgb/camera_info</remapping>
+          <remapping>/camera/image_raw:=/camera/rgb/image_rect_color</remapping>
+          <remapping>/camera/depth/image_raw:=/camera/depth_registered/image_raw</remapping>
+        </ros> -->
         <baseline>0.2</baseline>
         <alwaysOn>true</alwaysOn>
         <updateRate>0.0</updateRate>
-        <frame_name>depth_camera_1</frame_name>
+        <frame_name>camera_link_1</frame_name>
         <pointCloudCutoff>0.1</pointCloudCutoff>
         <pointCloudCutoffMax>10.0</pointCloudCutoffMax>
         <distortionK1>0</distortionK1>
@@ -198,33 +216,19 @@
         <focalLength>0</focalLength>
         <hackBaseline>0</hackBaseline>
       </plugin>
-    </sensor>
-  </gazebo>
-
-  <gazebo reference="depth_camera_2">
-    <sensor name="camera_2" type="depth">
-      <pose> 0 0 0 0 0 0</pose>
-      <visualize>true</visualize>
-      <update_rate>60.0</update_rate>
-      <camera name="depth_camera_2">
-        <horizontal_fov>1.047198</horizontal_fov>
-        <image>
-          <width>640</width>
-          <height>480</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.05</near>
-          <far>10</far>
-        </clip>
-      </camera>
-      <plugin name="depth_camera_controller_2" filename="libgazebo_ros_camera.so">
+      <!-- <plugin name="camera_plugin" filename="libgazebo_ros_camera.so">
         <baseline>0.2</baseline>
         <alwaysOn>true</alwaysOn>
         <updateRate>0.0</updateRate>
-        <frame_name>depth_camera_2</frame_name>
-        <pointCloudCutoff>0.1</pointCloudCutoff>
-        <pointCloudCutoffMax>10.0</pointCloudCutoffMax>
+        <cameraName>camera_ir</cameraName>
+        <imageTopicName>/camera/color/image_raw</imageTopicName>
+        <cameraInfoTopicName>/camera/color/camera_info</cameraInfoTopicName>
+        <depthImageTopicName>/camera/depth/image_raw</depthImageTopicName>
+        <depthImageCameraInfoTopicName>/camera/depth/camera_info</depthImageCameraInfoTopicName>
+        <pointCloudTopicName>/camera/depth/points</pointCloudTopicName>
+        <frameName>camera_link</frameName>
+        <pointCloudCutoff>0.5</pointCloudCutoff>
+        <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
         <distortionK1>0</distortionK1>
         <distortionK2>0</distortionK2>
         <distortionK3>0</distortionK3>
@@ -235,8 +239,8 @@
         <Cy>0</Cy>
         <focalLength>0</focalLength>
         <hackBaseline>0</hackBaseline>
-      </plugin>
+      </plugin> -->
     </sensor>
-  </gazebo> 
+  </gazebo>
 
 </robot>

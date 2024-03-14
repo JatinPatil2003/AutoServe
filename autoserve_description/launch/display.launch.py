@@ -50,10 +50,22 @@ def generate_launch_description():
         arguments=["-d", os.path.join(autoserve_description_dir, "rviz", "display.rviz")],
     )
 
+    controller_params_file = os.path.join(get_package_share_directory('autoserve_controller'),'config','autoserve_controllers.yaml')
+
+    controller_manager = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[robot_description,
+                    controller_params_file]
+    )
+
+    delayed_controller_manager = TimerAction(period=7.0, actions=[controller_manager])
+
     return LaunchDescription(
         [
-            joint_state_publisher_gui_node,
+            # joint_state_publisher_gui_node,
             robot_state_publisher_node,
             rviz_node,
+            delayed_controller_manager,
         ]
     )

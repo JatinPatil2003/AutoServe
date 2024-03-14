@@ -3,41 +3,31 @@
 
 <xacro:include filename="$(find autoserve_description)/urdf/materials.xacro" />
 <xacro:include filename="$(find autoserve_description)/urdf/autoserve_gazebo.xacro" />
-<xacro:include filename="$(find autoserve_description)/urdf/autoserve_ros2_control.xacro" />
-<xacro:include filename="$(find autoserve_description)/urdf/autoserve.trans" />
 
-<link name="base_footprint">
-  <!-- <collision>
-    <origin xyz="0.0 0.0 0.0055" rpy="0 0 0"/>
-    <geometry>
-      <box size="0.45 0.20 0.01" />
-    </geometry>
-  </collision> -->
-</link>
+<link name="base_footprint"/>
 
 <link name="base_link">
   <inertial>
-    <origin xyz="0.017764143959187594 -0.00010931568495259127 0.24169621947403908" rpy="0 0 0"/>
-    <mass value="10.036859574001216"/>
-    <inertia ixx="0.822232" iyy="0.810255" izz="0.334887" ixy="-1.8e-05" iyz="0.000454" ixz="-0.000983"/>
+    <origin xyz="0.025038817853430716 -1.1633430423217113e-05 0.0538872479683688" rpy="0 0 0"/>
+    <mass value="1.6848865813052847"/>
+    <inertia ixx="0.009471" iyy="0.00762" izz="0.010632" ixy="-3e-06" iyz="-0.0" ixz="-0.00066"/>
   </inertial>
   <visual>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://autoserve_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
-    <material name="plastic_translucent_matte_green"/>
+    <material name="black"/>
   </visual>
-  <!-- <collision>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+  <collision>
+    <!-- <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://autoserve_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision> -->
-  <collision>
-    <origin xyz="0.0 0.0 0.006" rpy="0 0 0"/>
+    </geometry> -->
+    <origin xyz="0.04 0 0.005" rpy="0 0 0"/>
     <geometry>
-      <box size="0.45 0.20 0.01" />
+      <!-- <mesh filename="package://cube_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/> -->
+      <box size="0.20 0.18 0.01" />
     </geometry>
   </collision>
 </link>
@@ -49,255 +39,150 @@
   <axis xyz="0 0 0"/>
 </joint>
 
-<link name="imu">
+<link name="camera_link">
   <inertial>
-    <origin xyz="-3.552713678800501e-17 -1.7763568394002506e-16 0.0004999999999999727" rpy="0 0 0"/>
-    <mass value="0.00016557850022283878"/>
-    <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="-0.0" iyz="-0.0" ixz="0.0"/>
+    <origin xyz="0.013571033223507722 -1.5421816108169115e-15 -1.8457457784393227e-15" rpy="0 0 0"/>
+    <mass value="0.05224581939729058"/>
+    <inertia ixx="3.8e-05" iyy="5e-06" izz="3.8e-05" ixy="0.0" iyz="-0.0" ixz="0.0"/>
   </inertial>
   <visual>
-    <origin xyz="0.0 0.0 -0.203" rpy="0 0 0"/>
+    <origin xyz="-0.175 0.0 -0.082" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://autoserve_description/meshes/imu_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://autoserve_description/meshes/depth_camera_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
-    <material name="plastic_translucent_matte_yellow"/>
+    <material name="paint_enamel_glossy_grey"/>
   </visual>
   <collision>
-    <origin xyz="0.0 0.0 -0.203" rpy="0 0 0"/>
+    <origin xyz="-0.175 0.0 -0.082" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://autoserve_description/meshes/imu_v1_1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://autoserve_description/meshes/depth_camera_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
 
-<link name="ydlidar">
-  <inertial>
-    <origin xyz="-2.7755575615628914e-17 -1.7308971658813632e-16 -0.012774955364728169" rpy="0 0 0"/>
-    <mass value="0.09117240534114449"/>
-    <inertia ixx="2.9e-05" iyy="2.9e-05" izz="4.9e-05" ixy="-0.0" iyz="-0.0" ixz="0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="-0.1632 0.0 -0.267" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/ydlidar_v1_1.stl" scale="0.00102 0.00102 0.00102"/>
-    </geometry>
-    <material name="plastic_translucent_matte_blue"/>
-  </visual>
-  <collision>
-    <origin xyz="-0.1632 0.0 -0.267" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/ydlidar_v1_1.stl" scale="0.00102 0.00102 0.00102"/>
-    </geometry>
-  </collision>
-</link>
+<link name="camera_link_1"/>
 
-<link name="depth_camera_1">
-  <inertial>
-    <origin xyz="0.011951472788559625 0.022747274204167237 -6.086448440437153e-05" rpy="0 0 0"/>
-    <mass value="0.35132131581082054"/>
-    <inertia ixx="0.000227" iyy="3.2e-05" izz="0.000229" ixy="-1e-06" iyz="-0.0" ixz="-0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="-0.2 0.0 -0.1755" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/depth_camera_v1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="plastic_translucent_matte_red"/>
-  </visual>
-  <collision>
-    <origin xyz="-0.2 0.0 -0.1755" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/depth_camera_v1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
-<link name="depth_camera_2">
-  <inertial>
-    <origin xyz="0.01195115490287238 0.02274721773464422 -6.09413650859425e-05" rpy="0 0 0"/>
-    <mass value="0.35132131581082054"/>
-    <inertia ixx="0.000227" iyy="3.2e-05" izz="0.000229" ixy="-1e-06" iyz="-0.0" ixz="-0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="-0.105108 0.0 -0.771167" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/depth_camera_v1_2.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="plastic_translucent_matte_red"/>
-  </visual>
-  <collision>
-    <origin xyz="-0.105108 0.0 -0.771167" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/depth_camera_v1_2.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
-<!-- <link name="depth_camera_2">
-  <inertial>
-    <origin xyz="0.01195115490287238 0.02274721773464422 -6.09413650859425e-05" rpy="0 0 0"/>
-    <mass value="0.35132131581082054"/>
-    <inertia ixx="0.000227" iyy="3.2e-05" izz="0.000229" ixy="-1e-06" iyz="-0.0" ixz="-0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="-0.105108 0.0 -0.771167" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/depth_camera_v1_2.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="plastic_translucent_matte_red"/>
-  </visual>
-  <collision>
-    <origin xyz="-0.105108 0.0 -0.771167" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/depth_camera_v1_2.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link> -->
-
-<link name="right_wheel">
-  <inertial>
-    <origin xyz="1.4446033464149508e-16 -0.015000000000000263 2.0816681711721685e-16" rpy="0 0 0"/>
-    <mass value="1.528210189769456086"/>
-    <inertia ixx="2e-05" iyy="3.5e-05" izz="2e-05" ixy="-0.0" iyz="0.0" ixz="0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="-0.0 0.1659 -0.05" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/right_wheel_v1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="rubber_hard"/>
-  </visual>
-  <collision>
-    <origin xyz="-0.0 0.1659 -0.05" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/right_wheel_v1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
-<link name="left_wheel">
-  <inertial>
-    <origin xyz="1.6623077439054263e-16 0.01500000000000018 1.3877787807814457e-16" rpy="0 0 0"/>
-    <mass value="1.528210189769456086"/>
-    <inertia ixx="2e-05" iyy="3.5e-05" izz="2e-05" ixy="0.0" iyz="0.0" ixz="0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="-0.0 -0.1659 -0.05" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/left_wheel_v1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="rubber_hard"/>
-  </visual>
-  <collision>
-    <origin xyz="-0.0 -0.1659 -0.05" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/left_wheel_v1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
-<link name="plate_1">
-  <inertial>
-    <origin xyz="-0.0800003178856868 0.1549999435304768 0.09999999999999992" rpy="0 0 0"/>
-    <mass value="0.6110849993971129"/>
-    <inertia ixx="0.004867" iyy="0.006203" izz="0.011067" ixy="0.0" iyz="0.0" ixz="-0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="0.0 0.0 -0.303" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/plate_1_v2_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="plastic_translucent_matte_blue"/>
-  </visual>
-  <collision>
-    <origin xyz="0.0 0.0 -0.303" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/plate_1_v2_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
-<link name="plate_2">
-  <inertial>
-    <origin xyz="-0.08000031788568687 0.1549999435304768 0.3299999999999999" rpy="0 0 0"/>
-    <mass value="0.6110849993971129"/>
-    <inertia ixx="0.004867" iyy="0.006203" izz="0.011067" ixy="0.0" iyz="-0.0" ixz="-0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="0.0 0.0 -0.533" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/plate_1_v2_2.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="plastic_translucent_matte_blue"/>
-  </visual>
-  <collision>
-    <origin xyz="0.0 0.0 -0.533" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://autoserve_description/meshes/plate_1_v2_2.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
-<joint name="base2imu" type="fixed">
-  <origin xyz="0.0 0.0 0.203" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="imu"/>
+<joint name="camera2camera_1" type="fixed">
+  <parent link="camera_link"/>
+  <child link="camera_link_1"/>
+  <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+  <axis xyz="0 0 0"/>
 </joint>
 
-<joint name="base2lidar" type="fixed">
-  <origin xyz="0.16 0.0 0.262" rpy="0 0 0"/>
+<link name="right_wheel_1">
+  <inertial>
+    <origin xyz="-3.3364538596768883e-08 -0.017500170586145114 1.5158223017064376e-08" rpy="0 0 0"/>
+    <mass value="0.1635143859009559"/>
+    <inertia ixx="8.2e-05" iyy="0.000131" izz="8.2e-05" ixy="-0.0" iyz="-0.0" ixz="-0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.00075 0.105044 -0.04" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://autoserve_description/meshes/right_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="rubber_soft"/>
+  </visual>
+  <collision>
+    <origin xyz="0.00075 0.105044 -0.04" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://autoserve_description/meshes/right_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="left_wheel_1">
+  <inertial>
+    <origin xyz="-1.4750377623972896e-09 0.017500000000000668 2.8030050856775457e-08" rpy="0 0 0"/>
+    <mass value="0.1635143859009559"/>
+    <inertia ixx="8.2e-05" iyy="0.000131" izz="8.2e-05" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.00075 -0.105 -0.04" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://autoserve_description/meshes/left_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="rubber_soft"/>
+  </visual>
+  <collision>
+    <origin xyz="0.00075 -0.105 -0.04" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://autoserve_description/meshes/left_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="lidar_1">
+  <inertial>
+    <origin xyz="0.026705900429681448 -0.024999999999999415 0.03770114222279286" rpy="0 0 0"/>
+    <mass value="1.1515616542314233"/>
+    <inertia ixx="0.000489" iyy="0.000861" izz="0.000987" ixy="-0.0" iyz="0.0" ixz="-0.000148"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.0955 -0.0 -0.196" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://autoserve_description/meshes/lidar_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="blue"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.0955 -0.0 -0.196" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://autoserve_description/meshes/lidar_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="imu_1">
+  <inertial>
+    <origin xyz="0.008350000000000996 0.009799999999999857 0.002299999999998234" rpy="0 0 0"/>
+    <mass value="0.0036264697230680163"/>
+    <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="-0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.0675 -0.05 -0.0835" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://autoserve_description/meshes/imu_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="plastic_matte_red"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.0675 -0.05 -0.0835" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://autoserve_description/meshes/imu_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="base2depth" type="fixed">
+  <origin xyz="0.0 0.0 1.2" rpy="0 0 0"/>
   <parent link="base_link"/>
-  <child link="ydlidar"/>
+  <child link="camera_link"/>
 </joint>
 
-<joint name="base2camera_1" type="fixed">
-  <origin xyz="0.2 -0.0 0.1755" rpy="0 0 0"/>
+<joint name="base2right" type="continuous">
+  <origin xyz="-0.00075 -0.105 0.04" rpy="0 0 0"/>
   <parent link="base_link"/>
-  <child link="depth_camera_1"/>
-</joint>
-
-<joint name="base2camera_2" type="fixed">
-  <origin xyz="0.105108 -0.0 0.771167" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="depth_camera_2"/>
-</joint>
-
-<!-- <joint name="base2camera_2" type="fixed">
-  <origin xyz="0.105108 -0.0 1.3" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="depth_camera_2"/>
-</joint> -->
-
-<joint name="base2rightw" type="continuous">
-  <origin xyz="0.0 -0.1659 0.05" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="right_wheel"/>
+  <child link="right_wheel_1"/>
   <axis xyz="-0.0 1.0 0.0"/>
 </joint>
 
-<joint name="base2leftw" type="continuous">
-  <origin xyz="0.0 0.1659 0.05" rpy="0 0 0"/>
+<joint name="base2left" type="continuous">
+  <origin xyz="-0.00075 0.105 0.04" rpy="0 0 0"/>
   <parent link="base_link"/>
-  <child link="left_wheel"/>
-  <axis xyz="0.0 1.0 0.0"/>
+  <child link="left_wheel_1"/>
+  <axis xyz="0.0 1.0 -0.0"/>
 </joint>
 
-<!-- prismatic -->
-
-<joint name="base2plate_1" type="fixed">
-  <origin xyz="0.0 -0.0 0.303" rpy="0 0 0"/>
+<joint name="base2lidar" type="fixed">
+  <origin xyz="0.0955 0.0 0.196" rpy="0 0 0"/>
   <parent link="base_link"/>
-  <child link="plate_1"/>
-  <!-- <axis xyz="1.0 -0.0 -0.0"/>
-  <limit upper="0.08" lower="-0.08" effort="100" velocity="100"/> -->
+  <child link="lidar_1"/>
 </joint>
 
-<joint name="base2plate_2" type="fixed">
-  <origin xyz="0.0 -0.0 0.533" rpy="0 0 0"/>
+<joint name="base2imu" type="fixed">
+  <origin xyz="0.0675 0.05 0.0835" rpy="0 0 0"/>
   <parent link="base_link"/>
-  <child link="plate_2"/>
-  <!-- <axis xyz="1.0 -0.0 -0.0"/>
-  <limit upper="0.08" lower="-0.08" effort="100" velocity="100"/> -->
+  <child link="imu_1"/>
 </joint>
 
 </robot>
