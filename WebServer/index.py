@@ -1,6 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes.start import start
+from ros.node import start_ros_node
+import threading
+from routes import start, navigation
+
+ros_thread = threading.Thread(target=start_ros_node)
+ros_thread.start()
 
 app = FastAPI()
 
@@ -12,4 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(start)
+app.include_router(start.router)
+
+app.include_router(navigation.router)
+
+
+# uvicorn index:app --reload

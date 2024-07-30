@@ -6,17 +6,25 @@ import os
 import signal
 import psutil
 
-start = APIRouter()
+router = APIRouter()
 process = None
+robot_status = "stopped"
 
-@start.get("/robot/start")
-async def get_location():
-    global process
+@router.get("/robot/start")
+async def start_robot():
+    global process, robot_status
     process = Popen(['ros2', 'launch', 'autoserve_gazebo', 'gazebo.launch.py'], preexec_fn=os.setsid)
-    return {'Started'}
+    robot_status = "started"
+    return {'status': robot_status}
 
-@start.get("/robot/stop")
-async def get_location():
+@router.get("/robot/stop")
+async def stop_robot():
+    global robot_status
     os.killpg(os.getpgid(process.pid), signal.SIGTERM)
     process.wait()
-    return {'Stopped'}
+    robot_status = "stopped"
+    return {'status': robot_status}
+
+@router.get("/robot/status")
+async def status_robot():
+    return {'status': robot_status}
