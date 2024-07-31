@@ -6,9 +6,9 @@ from subprocess import Popen, PIPE
 import os
 import signal
 import psutil
-from ros.topics import get_map_msg
-from mongodb.db import listMaps, listGoal
-from models.model import MapName
+from ros.topics import get_map_msg, get_location_msg
+from mongodb.db import listMaps, listGoal, saveGoal
+from models.model import MapName, Goal
 
 router = APIRouter()
 process = None
@@ -50,7 +50,21 @@ async def list_poses(name: str):
 @router.get("/navigation/current/map")
 async def get_current_map():
     map_msg = get_map_msg()
-    print(map_msg)
+    # print(map_msg)
     if map_msg:
         return map_msg
     return None
+
+@router.get("/navigation/current/location")
+async def get_current_location():
+    location_msg = get_location_msg()
+    print(location_msg)
+    if location_msg:
+        return location_msg
+    return None
+
+@router.post("/navigation/new/pose")
+async def save_map_data(goal: Goal):
+    print(goal)
+    saveGoal(goal)
+    return {"message": "Map data saved successfully"}

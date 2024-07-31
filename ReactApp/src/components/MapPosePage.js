@@ -4,6 +4,8 @@ import MapView from './MapView';
 function MapPosePage({ mapName, onBack }) {
   const [poses, setPoses] = useState([]);
   const [newPose, setNewPose] = useState('');
+  const [selectedPose, setSelectedPose] = useState(null);
+  const [orientation, setOrientation] = useState(null);
 
   useEffect(() => {
     fetch(`http://localhost:8000/navigation/list/pose/${encodeURIComponent(mapName)}`)
@@ -12,13 +14,21 @@ function MapPosePage({ mapName, onBack }) {
   }, []);
 
   const handleAddPose = () => {
-    fetch('http://localhost:8000/save/pose', {
+    fetch('http://localhost:8000/navigation/new/pose', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ pose: newPose }),
+      body: JSON.stringify(
+        { 
+          map_name: mapName,
+          name: newPose,
+          x: selectedPose.x,
+          y: selectedPose.y,
+          theta: orientation
+        }),
     }).then(response => response.json());
+    console.log(mapName, newPose, selectedPose, orientation)
   };
 
   const handleStartNavigation = () => {
@@ -44,7 +54,12 @@ function MapPosePage({ mapName, onBack }) {
       <button onClick={handleStartNavigation}>Start Navigation</button>
       <button onClick={handleAddPose} disabled={!newPose}>Add Pose</button>
       <button onClick={onBack}>Back</button>
-      <MapView />
+      <MapView 
+        setSelectedPose={setSelectedPose}
+        setOrientation={setOrientation}
+        selectedPose={selectedPose}
+        orientation={orientation}
+      />
     </div>
   );
 }

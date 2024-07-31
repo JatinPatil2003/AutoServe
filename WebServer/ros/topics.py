@@ -2,6 +2,7 @@ from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import PoseWithCovarianceStamped
 import json
 import os
+import math
 
 from ros.node import ros_node
 
@@ -40,21 +41,25 @@ def get_map_msg():
 
 def location_callback(msg):
     global location_msg
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+
+    # Quaternion to Euler conversion (yaw)
+    q = msg.pose.pose.orientation
+    siny_cosp = 2 * (q.w * q.z + q.x * q.y)
+    cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z)
+    theta = math.atan2(siny_cosp, cosy_cosp)
+
     location_msg = {
-            'pose': {
-                'position': {
-                    'x': msg.pose.pose.position.x,
-                    'y': msg.pose.pose.position.y,
-                    'z': msg.pose.pose.position.z,
-                },
-                'orientation': {
-                    'x': msg.pose.pose.orientation.x,
-                    'y': msg.pose.pose.orientation.y,
-                    'z': msg.pose.pose.orientation.z,
-                    'w': msg.pose.pose.orientation.w,
-                }
-            }
+            'x': x,
+            'y': y,
+            'theta': theta
         }
+    # print(location_msg)
+    
+def get_location_msg():
+    global location_msg
+    return location_msg
 
 ros_node.create_subscription(OccupancyGrid, 
                              '/map', map_callback, 10)
