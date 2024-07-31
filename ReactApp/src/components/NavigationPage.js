@@ -7,23 +7,33 @@ function NavigationPage({ onBack }) {
   const [useMap, setUseMap] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:8000/list/maps')
+    fetch('http://localhost:8000/navigation/list/maps')
       .then(response => response.json())
       .then(data => setMaps(data));
   }, []);
 
   const handleUseMap = () => {
     if (selectedMap) {
-      fetch(`http://localhost:8000/use_map?name=${selectedMap}`)
-        .then(response => response.json())
-        .then(() => setUseMap(true));
+      fetch('http://localhost:8000/navigation/use_map', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: selectedMap }),
+      })
+      .then(response => response.json())
+      .then(() => setUseMap(true));
     }
   };
 
   const handleStopNavigation = () => {
     fetch('http://localhost:8000/navigation/stop')
-      .then(response => response.json())
-      .then(() => onBack());
+      .then(response => response.json());
+  };
+
+  const handleStartNavigation = () => {
+    fetch('http://localhost:8000/navigation/start')
+      .then(response => response.json());
   };
 
   if (useMap) {
@@ -40,6 +50,7 @@ function NavigationPage({ onBack }) {
         ))}
       </div>
       <button class="btn btn-primary" onClick={handleUseMap} disabled={!selectedMap}>Use Map</button>
+      <button class="btn btn-primary" onClick={handleStartNavigation}>Start Navigation</button>
       <button class="btn btn-primary" onClick={handleStopNavigation}>Stop Navigation</button>
       <button class="btn btn-primary" onClick={onBack}>Back</button>
     </div>

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import MapView from './MapView';
 
 function MapPosePage({ mapName, onBack }) {
   const [poses, setPoses] = useState([]);
   const [newPose, setNewPose] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:8000/list/pose')
+    fetch(`http://localhost:8000/navigation/list/pose/${encodeURIComponent(mapName)}`)
       .then(response => response.json())
       .then(data => setPoses(data));
   }, []);
@@ -18,6 +19,12 @@ function MapPosePage({ mapName, onBack }) {
       },
       body: JSON.stringify({ pose: newPose }),
     }).then(response => response.json());
+  };
+
+  const handleStartNavigation = () => {
+    fetch('http://localhost:8000/navigation/start')
+      .then(response => response.json())
+      .then(() => onBack());
   };
 
   return (
@@ -34,8 +41,10 @@ function MapPosePage({ mapName, onBack }) {
         value={newPose}
         onChange={e => setNewPose(e.target.value)}
       />
+      <button onClick={handleStartNavigation}>Start Navigation</button>
       <button onClick={handleAddPose} disabled={!newPose}>Add Pose</button>
       <button onClick={onBack}>Back</button>
+      <MapView />
     </div>
   );
 }

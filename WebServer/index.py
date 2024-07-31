@@ -2,10 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from ros.node import start_ros_node
 import threading
-from routes import start, navigation
 
 ros_thread = threading.Thread(target=start_ros_node)
 ros_thread.start()
+
+from routes import start, navigation
 
 app = FastAPI()
 
@@ -21,5 +22,8 @@ app.include_router(start.router)
 
 app.include_router(navigation.router)
 
+@app.on_event("shutdown")
+def shutdown_event():
+    ros_thread.join() 
 
 # uvicorn index:app --reload

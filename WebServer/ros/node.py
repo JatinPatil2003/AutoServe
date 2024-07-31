@@ -11,5 +11,12 @@ def start_ros_node():
     global ros_node
     rclpy.init(args=None)
     ros_node = ROSNode()
-    rclpy.spin(ros_node)
-    rclpy.shutdown()
+    try:
+        rclpy.spin(ros_node)
+        # ros_node.destroy_node()
+        # rclpy.shutdown()
+    except:
+        pass
+    finally:
+        ros_node.destroy_node()
+        rclpy.shutdown()

@@ -9,3 +9,5 @@ class Pose(BaseModel):
 class Goal(Pose):
     map_name: str
 
+class MapName(BaseModel):
+    name: str

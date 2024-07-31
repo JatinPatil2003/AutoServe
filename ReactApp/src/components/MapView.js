@@ -7,18 +7,23 @@ const MapView = () => {
     useEffect(() => {
         const fetchMapData = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/map');
+                const response = await fetch('http://localhost:8000/navigation/current/map');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
                 setMapData(data);
+                console.log(mapData);
             } catch (error) {
                 console.error('Error fetching map data:', error);
             }
         };
 
         fetchMapData();
+
+        const intervalId = setInterval(fetchMapData, 1000); 
+
+        return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {
@@ -28,8 +33,8 @@ const MapView = () => {
             const { width, height } = mapData.info;
             
             // Set canvas dimensions
-            canvas.width = 1500;
-            canvas.height = 900;
+            canvas.width = width*2;
+            canvas.height = height*2;
 
             // Define cell size based on canvas size and map dimensions
             const cellWidth = canvas.width / width;

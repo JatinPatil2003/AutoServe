@@ -120,9 +120,7 @@ def listGoal(map_name):
         goals = pose_collection.find({"map_name": map_name})
         pose = []
         for goal in goals:
-            pose.append({
-                "name": goal["name"],
-            })
+            pose.append(goal["name"])
         return pose
     except Exception as e:
         return []

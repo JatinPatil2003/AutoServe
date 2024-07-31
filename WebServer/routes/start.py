@@ -13,15 +13,18 @@ robot_status = "stopped"
 @router.get("/robot/start")
 async def start_robot():
     global process, robot_status
-    process = Popen(['ros2', 'launch', 'autoserve_gazebo', 'gazebo.launch.py'], preexec_fn=os.setsid)
+    if not process:
+        process = Popen(['ros2', 'launch', 'autoserve_gazebo', 'gazebo.launch.py'], preexec_fn=os.setsid)
     robot_status = "started"
     return {'status': robot_status}
 
 @router.get("/robot/stop")
 async def stop_robot():
-    global robot_status
-    os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-    process.wait()
+    global process, robot_status
+    if process:
+        os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+        process.wait()
+        process = None
     robot_status = "stopped"
     return {'status': robot_status}
 

@@ -1,13 +1,15 @@
-from node import ros_node
 from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import PoseWithCovarianceStamped
 import json
 import os
 
+from ros.node import ros_node
+
 map_msg = {}
 location_msg = {}
 
 def map_callback(msg):
+    print('\n\n\n\n\n\n\nRunning Map Callback\n\n\n\n\n')
     global map_msg
     map_msg = {
             'info': {
@@ -30,6 +32,11 @@ def map_callback(msg):
             },
             'data': list(msg.data)
         }
+    print(map_msg)
+
+def get_map_msg():
+    global map_msg
+    return map_msg
 
 def location_callback(msg):
     global location_msg
@@ -52,7 +59,7 @@ def location_callback(msg):
 ros_node.create_subscription(OccupancyGrid, 
                              '/map', map_callback, 10)
 
-ros_node.create_subscription(PoseWithCovarianceStamped
+ros_node.create_subscription(PoseWithCovarianceStamped,
                              '/amcl_pose', location_callback, 10)
 
 
