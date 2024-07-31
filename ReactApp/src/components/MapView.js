@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import robotIconSrc from './robot.png';
 
-const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation }) => {
+const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, goalPose }) => {
     const [mapData, setMapData] = useState(null);
     const [robotLocation, setRobotLocation] = useState(null);
     const [robotIcon, setRobotIcon] = useState(null);
@@ -26,7 +26,7 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation })
 
         fetchMapData();
 
-        const intervalId = setInterval(fetchMapData, 1000);
+        const intervalId = setInterval(fetchMapData, 10000);
 
         return () => clearInterval(intervalId);
     }, []);
@@ -47,7 +47,7 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation })
 
         fetchRobotLocation();
 
-        const intervalId = setInterval(fetchRobotLocation, 1000);
+        const intervalId = setInterval(fetchRobotLocation, 100);
 
         return () => clearInterval(intervalId);
     }, []);
@@ -91,28 +91,12 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation })
             if (selectedPose) {
                 drawSelectedPose(ctx, selectedPose, orientation, mapData.info, cellWidth, cellHeight);
             }
+
+            if (goalPose) {
+                drawGoalPose(ctx, goalPose, mapData.info, cellWidth, cellHeight);
+            }
         }
     }, [mapData, robotLocation, robotIcon, selectedPose, orientation]);
-
-    const sendPose = async (pose) => {
-        try {
-            const response = await fetch('http://localhost:8000/navigation/new/pose', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(pose),
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            console.log('Pose sent successfully');
-        } catch (error) {
-            console.error('Error sending pose:', error);
-        }
-    };
 
     const loadMap = (ctx, mapData, mapInfo, cellWidth, cellHeight) => {
         // Loop through map data and draw onto canvas
@@ -176,6 +160,19 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation })
         }
     };
 
+    const drawGoalPose = (ctx, pose, mapInfo, cellWidth, cellHeight) => {
+        const { x, y, theta } = pose;
+        const poseX = (-x - mapInfo.origin.position.x) / mapInfo.resolution * cellWidth;
+        const poseY = (y - mapInfo.origin.position.y) / mapInfo.resolution * cellHeight;
+
+        const iconSize = 20; 
+            ctx.save();
+            ctx.translate(poseX, poseY);
+            ctx.rotate(-theta - Math.PI / 2); // Rotate the icon based on the robot's orientation
+            ctx.drawImage(robotIcon, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
+            ctx.restore();
+    }
+
     const handleCanvasMouseDown = (event) => {
         if (!selectPoseMode) return;
 
@@ -195,7 +192,7 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation })
     };
 
     const handleCanvasMouseMove = (event) => {
-        console.log(selectPoseMode, isDragging, orientation);
+        // console.log(selectPoseMode, isDragging, orientation);
         if (!selectPoseMode || !isDragging || !selectedPose) return;
 
         const canvas = canvasRef.current;

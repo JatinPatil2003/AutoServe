@@ -7,8 +7,8 @@ import os
 import signal
 import psutil
 from ros.topics import get_map_msg, get_location_msg
-from mongodb.db import listMaps, listGoal, saveGoal
-from models.model import MapName, Goal
+from mongodb.db import listMaps, listGoal, saveGoal, getGoal
+from models.model import MapName, Goal, Pose
 
 router = APIRouter()
 process = None
@@ -38,19 +38,16 @@ async def list_maps():
 @router.post("/navigation/use_map")
 async def save_map_data(name: MapName):
     global map_name
-    print('Selected Map is', name.name)
     map_name = name.name
     return {"message": "Map data saved successfully"}
 
 @router.get("/navigation/list/pose/{name}")
 async def list_poses(name: str):
-    print('map name', name)
     return listGoal(name)
 
 @router.get("/navigation/current/map")
 async def get_current_map():
     map_msg = get_map_msg()
-    # print(map_msg)
     if map_msg:
         return map_msg
     return None
@@ -58,7 +55,6 @@ async def get_current_map():
 @router.get("/navigation/current/location")
 async def get_current_location():
     location_msg = get_location_msg()
-    print(location_msg)
     if location_msg:
         return location_msg
     return None
@@ -68,3 +64,17 @@ async def save_map_data(goal: Goal):
     print(goal)
     saveGoal(goal)
     return {"message": "Map data saved successfully"}
+
+@router.post("/navigation/pose")
+async def save_map_data(goal: Goal):
+    print(goal)
+    return getGoal(goal.map_name, goal.name)
+
+@router.post("/navigation/goal/start")
+async def save_map_data(pose: Pose):
+    print(pose)
+    return {'Navigation Started'}
+
+@router.get("/navigation/goal/cancel")
+async def stop_navigation():
+    return {'Navigation Stopped'}
