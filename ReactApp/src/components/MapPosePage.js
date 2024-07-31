@@ -7,12 +7,44 @@ function MapPosePage({ mapName, onBack }) {
   const [selectedPose, setSelectedPose] = useState(null);
   const [orientation, setOrientation] = useState(null);
   const [goalPose, setGoalPose] = useState(null);
+  const [navStatus, setNavStatus] = useState('');
+  const [changeNavStatus, setChangeNavStatus] = useState(null);
+  const [remainDist, setRemainDist] = useState(0.0);
 
   useEffect(() => {
     fetch(`http://localhost:8000/navigation/list/pose/${encodeURIComponent(mapName)}`)
       .then(response => response.json())
       .then(data => setPoses(data));
   }, []);
+
+  useEffect(() => {
+    const fetchRobotLocation = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/navigation/goal/feedback');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            const roundedData = parseFloat(data).toFixed(2);
+            setRemainDist(roundedData);
+            if(parseFloat(roundedData) === 0 && changeNavStatus){
+              setNavStatus('Success');
+            }
+            else if(parseFloat(roundedData) !== 0){
+              setChangeNavStatus(true);
+                setNavStatus('Running');
+            }
+        } catch (error) {
+            console.error('Error fetching robot location:', error);
+        }
+    };
+
+    fetchRobotLocation();
+
+    const intervalId = setInterval(fetchRobotLocation, 400);
+
+    return () => clearInterval(intervalId);
+}, []);
 
   const handleAddPose = () => {
     fetch('http://localhost:8000/navigation/new/pose', {
@@ -59,9 +91,12 @@ function MapPosePage({ mapName, onBack }) {
       throw new Error('Network response was not ok');
     }
 
-    const data_cancel = await response_cancel.json();
+    const data_cancel = response_cancel.json();
     console.log(data_cancel);
     setGoalPose(null);
+    setNavStatus('Cancelled');
+    console.log(navStatus);
+    setChangeNavStatus(false);
   };
 
   const handleGoalPoseDetails = async (pose) => {
@@ -103,6 +138,7 @@ function MapPosePage({ mapName, onBack }) {
       <button onClick={handleNavigationGoalStop}>Cancel Goal</button>
       <button onClick={handleAddPose} disabled={!newPose}>Add Pose</button>
       <button onClick={onBack}>Back</button>
+      <p>Navigation Status: {navStatus}, Distance Remaining: {remainDist}</p>
       <MapView 
         setSelectedPose={setSelectedPose}
         setOrientation={setOrientation}

@@ -7,6 +7,7 @@ import os
 import signal
 import psutil
 from ros.topics import get_map_msg, get_location_msg
+from ros.action import send_goal, cancel_goal, get_navigation_feedback
 from mongodb.db import listMaps, listGoal, saveGoal, getGoal
 from models.model import MapName, Goal, Pose
 
@@ -73,8 +74,15 @@ async def save_map_data(goal: Goal):
 @router.post("/navigation/goal/start")
 async def save_map_data(pose: Pose):
     print(pose)
+    send_goal(pose)
     return {'Navigation Started'}
 
 @router.get("/navigation/goal/cancel")
 async def stop_navigation():
+    cancel_goal()
     return {'Navigation Stopped'}
+
+@router.get("/navigation/goal/feedback")
+async def feedback_navigation():
+    feedback = get_navigation_feedback()
+    return {feedback}
