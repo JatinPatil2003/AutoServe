@@ -7,6 +7,7 @@ import os
 import signal
 import psutil
 from ros.topics import get_map_msg, get_location_msg
+from ros.service import set_initial_pose
 from ros.action import send_goal, cancel_goal, get_navigation_feedback
 from mongodb.db import listMaps, listGoal, saveGoal, getGoal
 from models.model import MapName, Goal, Pose
@@ -14,8 +15,8 @@ from models.model import MapName, Goal, Pose
 router = APIRouter()
 process = None
 
-@router.get("/navigation/start")
-async def start_navigation():
+@router.post("/navigation/start")
+async def start_navigation(map_name: MapName):
     global process
     if not process:
         process = Popen(['ros2', 'launch', 'autoserve_navigation', 'navigation.launch.py'], preexec_fn=os.setsid)
@@ -86,3 +87,8 @@ async def stop_navigation():
 async def feedback_navigation():
     feedback = get_navigation_feedback()
     return {feedback}
+
+@router.post("/navigation/initial_pose")
+async def initial_pose(pose: Pose):
+    set_initial_pose(pose)
+    return {'Initial Pose Set'}

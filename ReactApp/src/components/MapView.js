@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import robotIconSrc from './robot.png';
+import robotIconSrc from './icons/robot.png';
+import poseIconSrc from './icons/pose.png';
 
 const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, goalPose }) => {
     const [mapData, setMapData] = useState(null);
     const [robotLocation, setRobotLocation] = useState(null);
     const [robotIcon, setRobotIcon] = useState(null);
+    const [poseIcon, setPoseIcon] = useState(null);
     const [selectPoseMode, setSelectPoseMode] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [initialClick, setInitialClick] = useState(null);
@@ -63,14 +65,29 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, g
     }, []);
 
     useEffect(() => {
+        const loadPoseIcon = () => {
+            const icon = new Image();
+            icon.src = poseIconSrc; // Update with the correct path to your icon
+            icon.onload = () => setPoseIcon(icon);
+        };
+
+        loadPoseIcon();
+    }, []);
+
+    useEffect(() => {
         if (mapData && robotIcon) {
             const canvas = canvasRef.current;
             const ctx = canvas.getContext('2d');
             const { width, height } = mapData.info;
+            const { innerWidth: window_width, innerHeight: window_height } = window;
 
             // Set canvas dimensions
-            canvas.width = width * 2;
-            canvas.height = height * 2;
+            canvas.width = window_width;
+            canvas.height = height * window_width / width;
+            if(canvas.height >= window_height - (height / 1.5)){
+                canvas.height = window_height - (height / 1.5);
+                canvas.width = (width * window_height / height) - (width / 1.5);
+            }
 
             // Define cell size based on canvas size and map dimensions
             const cellWidth = canvas.width / width;
@@ -82,11 +99,6 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, g
             // Draw the map data
             loadMap(ctx, mapData.data, mapData.info, cellWidth, cellHeight);
 
-            // Draw the robot location
-            if (robotLocation) {
-                drawRobot(ctx, robotLocation, mapData.info, cellWidth, cellHeight);
-            }
-
             // Draw the selected pose
             if (selectedPose) {
                 drawSelectedPose(ctx, selectedPose, orientation, mapData.info, cellWidth, cellHeight);
@@ -94,6 +106,10 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, g
 
             if (goalPose) {
                 drawGoalPose(ctx, goalPose, mapData.info, cellWidth, cellHeight);
+            }
+
+            if (robotLocation) {
+                drawRobot(ctx, robotLocation, mapData.info, cellWidth, cellHeight);
             }
         }
     }, [mapData, robotLocation, robotIcon, selectedPose, orientation]);
@@ -137,7 +153,7 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, g
         
         // console.log(x, y, robotX, robotY);
         // Draw robot icon
-        const iconSize = 20; // Adjust the icon size if needed
+        const iconSize = 25; // Adjust the icon size if needed
         ctx.save();
         ctx.translate(robotX, robotY);
         ctx.rotate(-theta - Math.PI / 2); // Rotate the icon based on the robot's orientation
@@ -151,11 +167,11 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, g
         const poseY = (y - mapInfo.origin.position.y) / mapInfo.resolution * cellHeight;
 
         if (isDragging) {
-            const iconSize = 20; // Adjust the icon size if needed
+            const iconSize = 30; // Adjust the icon size if needed
             ctx.save();
             ctx.translate(poseX, poseY);
             ctx.rotate(-orientation - Math.PI / 2); // Rotate the icon based on the robot's orientation
-            ctx.drawImage(robotIcon, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
+            ctx.drawImage(poseIcon, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
             ctx.restore();
         }
     };
@@ -165,11 +181,11 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, g
         const poseX = (-x - mapInfo.origin.position.x) / mapInfo.resolution * cellWidth;
         const poseY = (y - mapInfo.origin.position.y) / mapInfo.resolution * cellHeight;
 
-        const iconSize = 20; 
+        const iconSize = 30; 
             ctx.save();
             ctx.translate(poseX, poseY);
             ctx.rotate(-theta - Math.PI / 2); // Rotate the icon based on the robot's orientation
-            ctx.drawImage(robotIcon, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
+            ctx.drawImage(poseIcon, -iconSize / 2, -iconSize / 2, iconSize, iconSize);
             ctx.restore();
     }
 
@@ -226,13 +242,17 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, g
     return (
         <div>
             <button onClick={handleSelectPoseClick}>Select Pose</button>
-            <canvas
-                ref={canvasRef}
-                style={{ border: '1px solid black' }}
-                onMouseDown={handleCanvasMouseDown}
-                onMouseMove={handleCanvasMouseMove}
-                onMouseUp={handleCanvasMouseUp}
-            />
+            <div>
+                <center>
+                    <canvas
+                        ref={canvasRef}
+                        style={{ border: '1px solid black' }}
+                        onMouseDown={handleCanvasMouseDown}
+                        onMouseMove={handleCanvasMouseMove}
+                        onMouseUp={handleCanvasMouseUp}
+                    />
+                </center>
+            </div>
         </div>
     );
 };

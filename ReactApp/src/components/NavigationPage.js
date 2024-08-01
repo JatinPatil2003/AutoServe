@@ -5,6 +5,8 @@ function NavigationPage({ onBack }) {
   const [maps, setMaps] = useState([]);
   const [selectedMap, setSelectedMap] = useState('');
   const [useMap, setUseMap] = useState(false);
+  const [startNav, setStartNav] = useState(false);
+  const [stopButton, setStopButton] = useState(true);
 
   useEffect(() => {
     fetch('http://localhost:8000/navigation/list/maps')
@@ -28,16 +30,30 @@ function NavigationPage({ onBack }) {
 
   const handleStopNavigation = () => {
     fetch('http://localhost:8000/navigation/stop')
-      .then(response => response.json());
+      .then(response => response.json())
+      .then(() => setSelectedMap(''))
+      .then(() => setStopButton(true));
   };
 
   const handleStartNavigation = () => {
-    fetch('http://localhost:8000/navigation/start')
-      .then(response => response.json());
+    fetch('http://localhost:8000/navigation/start', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(
+        { 
+          name: selectedMap
+        }),
+    })
+    .then(response => response.json())
+    .then(() => setStartNav(true))
+    .then(() => setStopButton(false))
+    .then(() => setUseMap(false));
   };
 
-  if (useMap) {
-    return <MapPosePage mapName={selectedMap} onBack={() => setUseMap(false)} />;
+  if (startNav) {
+    return <MapPosePage mapName={selectedMap} onBack={() => setStartNav(false)} />;
   }
 
   return (
@@ -49,9 +65,9 @@ function NavigationPage({ onBack }) {
           <button key={map} onClick={() => setSelectedMap(map)}>{map}</button>
         ))}
       </div>
-      <button class="btn btn-primary" onClick={handleUseMap} disabled={!selectedMap}>Use Map</button>
-      <button class="btn btn-primary" onClick={handleStartNavigation}>Start Navigation</button>
-      <button class="btn btn-primary" onClick={handleStopNavigation}>Stop Navigation</button>
+      <button class="btn btn-primary" onClick={handleUseMap} disabled={!selectedMap}>Use Map: {selectedMap}</button>
+      <button class="btn btn-primary" onClick={handleStartNavigation} disabled={!useMap}>Start Navigation</button>
+      <button class="btn btn-primary" onClick={handleStopNavigation} disabled={stopButton}>Stop Navigation</button>
       <button class="btn btn-primary" onClick={onBack}>Back</button>
     </div>
   );
