@@ -15,7 +15,7 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, g
     useEffect(() => {
         const fetchMapData = async () => {
             try {
-                const response = await fetch('http://68e9-65-0-134-209.ngrok-free.app/navigation/current/map');
+                const response = await fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/current/map');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -36,7 +36,7 @@ const MapView = ({ setSelectedPose, setOrientation, selectedPose, orientation, g
     useEffect(() => {
         const fetchRobotLocation = async () => {
             try {
-                const response = await fetch('http://68e9-65-0-134-209.ngrok-free.app/navigation/current/location');
+                const response = await fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/current/location');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

@@ -9,14 +9,14 @@ function NavigationPage({ onBack }) {
   const [stopButton, setStopButton] = useState(true);
 
   useEffect(() => {
-    fetch('http://68e9-65-0-134-209.ngrok-free.app/navigation/list/maps')
+    fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/list/maps')
       .then(response => response.json())
       .then(data => setMaps(data));
   }, []);
 
   const handleUseMap = () => {
     if (selectedMap) {
-      fetch('http://68e9-65-0-134-209.ngrok-free.app/navigation/use_map', {
+      fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/use_map', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,14 +29,14 @@ function NavigationPage({ onBack }) {
   };
 
   const handleStopNavigation = () => {
-    fetch('http://68e9-65-0-134-209.ngrok-free.app/navigation/stop')
+    fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/stop')
       .then(response => response.json())
       .then(() => setSelectedMap(''))
       .then(() => setStopButton(true));
   };
 
   const handleStartNavigation = () => {
-    fetch('http://68e9-65-0-134-209.ngrok-free.app/navigation/start', {
+    fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/start', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ function NavigationPage({ onBack }) {
 
   return (
     <div>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"></link>
+      <link href="httpss://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"></link>
       <h1>Select a Map for Navigation</h1>
       <div>
         {maps.map(map => (
