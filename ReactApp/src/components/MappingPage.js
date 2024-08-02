@@ -4,13 +4,13 @@ function MappingPage({ onBack }) {
   const [mapName, setMapName] = useState('');
 
   const handleStopMapping = () => {
-    fetch('http://localhost:8000/mapping/stop')
+    fetch('http://172.27.232.5:8000/mapping/stop')
       .then(response => response.json())
       .then(() => onBack());
   };
 
   const handleSaveMap = () => {
-    fetch('http://localhost:8000/save_map', {
+    fetch('http://172.27.232.5:8000/save_map', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

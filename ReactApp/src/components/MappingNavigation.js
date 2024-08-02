@@ -2,7 +2,7 @@ import React from 'react';
 
 function MappingNavigation({ operation, onBack }) {
   const handleStop = () => {
-    fetch(`http://localhost:8000/${operation}/stop`)
+    fetch(`http://172.27.232.5:8000/${operation}/stop`)
       .then(response => response.json())
       .then(() => onBack());
   };
