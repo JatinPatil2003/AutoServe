@@ -5,7 +5,7 @@ function RobotControl() {
   const [robotStatus, setRobotStatus] = useState('stopped');
 
   useEffect(() => {
-    fetch('http://172.27.232.2:8000/robot/status')
+    fetch('http://68e9-65-0-134-209.ngrok-free.app/robot/status')
       .then(response => response.json())
       .then(data => {
         if (data.status === 'started') {
@@ -15,13 +15,13 @@ function RobotControl() {
   }, []);
 
   const handleStart = () => {
-    fetch('http://172.27.232.2:8000/robot/start')
+    fetch('http://68e9-65-0-134-209.ngrok-free.app/robot/start')
       .then(response => response.json())
       .then(() => setRobotStatus('started'));
   };
 
   const handleStop = () => {
-    fetch('http://172.27.232.2:8000/robot/stop')
+    fetch('http://68e9-65-0-134-209.ngrok-free.app/robot/stop')
       .then(response => response.json())
       .then(() => setRobotStatus('stopped'));
   };
