@@ -4,13 +4,13 @@ function MappingPage({ onBack }) {
   const [mapName, setMapName] = useState('');
 
   const handleStopMapping = () => {
-    fetch('https://68e9-65-0-134-209.ngrok-free.app/mapping/stop')
+    fetch('http://13.201.82.2:5747/mapping/stop')
       .then(response => response.json())
       .then(() => onBack());
   };
 
   const handleSaveMap = () => {
-    fetch('https://68e9-65-0-134-209.ngrok-free.app/save_map', {
+    fetch('http://13.201.82.2:5747/save_map', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

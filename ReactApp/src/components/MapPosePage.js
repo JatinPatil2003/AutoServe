@@ -13,7 +13,7 @@ function MapPosePage({ mapName, onBack }) {
   const [remainDist, setRemainDist] = useState(0.0);
 
   useEffect(() => {
-    fetch(`https://68e9-65-0-134-209.ngrok-free.app/navigation/list/pose/${encodeURIComponent(mapName)}`)
+    fetch(`http://13.201.82.2:5747/navigation/list/pose/${encodeURIComponent(mapName)}`)
       .then(response => response.json())
       .then(data => setPoses(data));
   }, []);
@@ -21,7 +21,7 @@ function MapPosePage({ mapName, onBack }) {
   useEffect(() => {
     const fetchRobotLocation = async () => {
         try {
-            const response = await fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/goal/feedback');
+            const response = await fetch('http://13.201.82.2:5747/navigation/goal/feedback');
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -53,7 +53,7 @@ function MapPosePage({ mapName, onBack }) {
 }, [changeNavStatus]);
 
   const handleAddPose = () => {
-    fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/new/pose', {
+    fetch('http://13.201.82.2:5747/navigation/new/pose', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ function MapPosePage({ mapName, onBack }) {
   };
 
   const handleNavigationGoalStart = async () => {
-    const response_navigation = await fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/goal/start', {
+    const response_navigation = await fetch('http://13.201.82.2:5747/navigation/goal/start', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ function MapPosePage({ mapName, onBack }) {
   };
 
   const handleNavigationGoalStop = async () => {
-    const response_cancel = await fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/goal/cancel', {
+    const response_cancel = await fetch('http://13.201.82.2:5747/navigation/goal/cancel', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ function MapPosePage({ mapName, onBack }) {
   };
 
   const handleGoalPoseDetails = async (pose) => {
-    const response = await fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/pose', {
+    const response = await fetch('http://13.201.82.2:5747/navigation/pose', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ function MapPosePage({ mapName, onBack }) {
   };
 
   const handleSetInitialPose = () => {
-    fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/initial_pose', {
+    fetch('http://13.201.82.2:5747/navigation/initial_pose', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

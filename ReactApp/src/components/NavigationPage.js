@@ -9,14 +9,14 @@ function NavigationPage({ onBack }) {
   const [stopButton, setStopButton] = useState(true);
 
   useEffect(() => {
-    fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/list/maps')
+    fetch('http://13.201.82.2:5747/navigation/list/maps')
       .then(response => response.json())
       .then(data => setMaps(data));
   }, []);
 
   const handleUseMap = () => {
     if (selectedMap) {
-      fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/use_map', {
+      fetch('http://13.201.82.2:5747/navigation/use_map', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,14 +29,14 @@ function NavigationPage({ onBack }) {
   };
 
   const handleStopNavigation = () => {
-    fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/stop')
+    fetch('http://13.201.82.2:5747/navigation/stop')
       .then(response => response.json())
       .then(() => setSelectedMap(''))
       .then(() => setStopButton(true));
   };
 
   const handleStartNavigation = () => {
-    fetch('https://68e9-65-0-134-209.ngrok-free.app/navigation/start', {
+    fetch('http://13.201.82.2:5747/navigation/start', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
