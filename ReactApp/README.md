@@ -2,6 +2,42 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+
+## Setting Up AWS EC-2
+
+```bash
+sudo apt update
+sudo apt install nginx
+```
+```bash
+sudo nano /etc/nginx/sites-available/default
+```
+```
+server {
+    listen 5747; # port which will listen
+    server_name <instance_ip>;
+
+    location / {
+        proxy_pass http://<localserver_vpn_tunnel_ip>:8000;  
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+```bash
+sudo systemctl restart nginx
+```
+```bash
+# For Debugging
+sudo nginx -t
+curl http://<instance_ip>:5747
+sudo tail -f /var/log/nginx/error.log
+```
+
+Run FastAPI Backend on localhost:8080
+
 ## Available Scripts
 
 In the project directory, you can run:
