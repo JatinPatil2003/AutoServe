@@ -1,5 +1,5 @@
-import React from 'react';
-import RobotControl from './components/RobotControl';
+import React from "react";
+import RobotControl from "./components/RobotControl";
 
 function App() {
   return (

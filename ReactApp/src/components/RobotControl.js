@@ -1,40 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import NextPage from './NextPage';
-import './css/RobotControl.css';
-import image1 from './img/fusion.png';
-import image2 from './img/real.png';
+import React, { useEffect, useState } from "react";
+import NextPage from "./NextPage";
+import "./css/RobotControl.css";
+import image1 from "./img/fusion.png";
+import image2 from "./img/real.png";
 
 function RobotControl() {
-  const [robotStatus, setRobotStatus] = useState('stopped');
+  const [robotStatus, setRobotStatus] = useState("stopped");
 
   useEffect(() => {
-    fetch('http://13.201.82.2:5747/robot/status')
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === 'started') {
-          setRobotStatus('started');
+    fetch("http://13.201.82.2:5747/robot/status")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "started") {
+          setRobotStatus("started");
         }
       });
   }, []);
 
   const handleStart = () => {
-    fetch('http://13.201.82.2:5747/robot/start')
-      .then(response => response.json())
-      .then(() => setRobotStatus('started'));
+    fetch("http://13.201.82.2:5747/robot/start")
+      .then((response) => response.json())
+      .then(() => setRobotStatus("started"));
   };
 
   const handleStop = () => {
-    fetch('http://13.201.82.2:5747/robot/stop')
-      .then(response => response.json())
-      .then(() => setRobotStatus('stopped'));
+    fetch("http://13.201.82.2:5747/robot/stop")
+      .then((response) => response.json())
+      .then(() => setRobotStatus("stopped"));
   };
 
-  if (robotStatus === 'started') {
-    return <NextPage onBack={() => setRobotStatus('stopped')} />;
+  if (robotStatus === "started") {
+    return <NextPage onBack={() => setRobotStatus("stopped")} />;
   }
 
   return (
-    <div className='robot-control'>
+    <div className="robot-control">
       <h1>Robot Control</h1>
       <div className="button-container">
         <button onClick={handleStart}>Start Robot</button>

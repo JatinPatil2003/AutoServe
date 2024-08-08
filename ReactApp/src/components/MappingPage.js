@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function MappingPage({ onBack }) {
-  const [mapName, setMapName] = useState('');
+  const [mapName, setMapName] = useState("");
 
   const handleStopMapping = () => {
-    fetch('http://13.201.82.2:5747/mapping/stop')
-      .then(response => response.json())
+    fetch("http://13.201.82.2:5747/mapping/stop")
+      .then((response) => response.json())
       .then(() => onBack());
   };
 
   const handleSaveMap = () => {
-    fetch('http://13.201.82.2:5747/save_map', {
-      method: 'POST',
+    fetch("http://13.201.82.2:5747/save_map", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ name: mapName }),
-    }).then(response => response.json());
+    }).then((response) => response.json());
   };
 
   return (
@@ -26,9 +26,11 @@ function MappingPage({ onBack }) {
         type="text"
         placeholder="Enter map name"
         value={mapName}
-        onChange={e => setMapName(e.target.value)}
+        onChange={(e) => setMapName(e.target.value)}
       />
-      <button onClick={handleSaveMap} disabled={!mapName}>Save Map</button>
+      <button onClick={handleSaveMap} disabled={!mapName}>
+        Save Map
+      </button>
       <button onClick={handleStopMapping}>Stop Mapping</button>
       <button onClick={onBack}>Back</button>
     </div>
