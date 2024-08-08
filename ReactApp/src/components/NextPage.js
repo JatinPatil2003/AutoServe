@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import NavigationPage from './NavigationPage';
 import MappingPage from './MappingPage';
+import './css/NextPage.css';
 
 function NextPage({ onBack }) {
   const [operation, setOperation] = useState(null);
@@ -14,11 +15,15 @@ function NextPage({ onBack }) {
   }
 
   return (
-    <div>
-      <h1>Robot Operations</h1>
-      <button onClick={() => setOperation('mapping')}>Start Mapping</button>
-      <button onClick={() => setOperation('navigation')}>Start Navigation</button>
-      <button onClick={onBack}>Back</button>
+    <div className='robot-operations'>
+      <h1>Select Operations</h1>
+      <div>
+        <button onClick={() => setOperation('mapping')}>Mapping</button>
+        <button onClick={() => setOperation('navigation')}>Navigation</button>
+      </div>
+      <div>
+        <button onClick={onBack}>Back</button>
+      </div>
     </div>
   );
 }

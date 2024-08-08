@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MapPosePage from './MapPosePage';
+import './css/NavigationPage.css';
 
 function NavigationPage({ onBack }) {
   const [maps, setMaps] = useState([]);
@@ -14,14 +15,14 @@ function NavigationPage({ onBack }) {
       .then(data => setMaps(data));
   }, []);
 
-  const handleUseMap = () => {
-    if (selectedMap) {
+  const handleUseMap = (map) => {
+    if (map) {
       fetch('http://13.201.82.2:5747/navigation/use_map', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: selectedMap }),
+        body: JSON.stringify({ name: map }),
       })
       .then(response => response.json())
       .then(() => setUseMap(true));
@@ -56,19 +57,28 @@ function NavigationPage({ onBack }) {
     return <MapPosePage mapName={selectedMap} onBack={() => setStartNav(false)} />;
   }
 
+  const handleMapSelection = (map) => {
+    setSelectedMap(map);
+    console.log(map);
+    handleUseMap(map);
+  };
+
   return (
-    <div>
-      <link href="httpss://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"></link>
-      <h1>Select a Map for Navigation</h1>
-      <div>
-        {maps.map(map => (
-          <button key={map} onClick={() => setSelectedMap(map)}>{map}</button>
-        ))}
+    <div className="navigation-page">
+      <h1>Navigation</h1>
+      <div className="map-selection">
+        <select value={selectedMap} onChange={(e) => handleMapSelection(e.target.value)}>
+          <option value="">Select Map</option>
+          {maps.map(map => (
+            <option key={map} value={map}>{map}</option>
+          ))}
+        </select>
       </div>
-      <button class="btn btn-primary" onClick={handleUseMap} disabled={!selectedMap}>Use Map: {selectedMap}</button>
-      <button class="btn btn-primary" onClick={handleStartNavigation} disabled={!useMap}>Start Navigation</button>
-      <button class="btn btn-primary" onClick={handleStopNavigation} disabled={stopButton}>Stop Navigation</button>
-      <button class="btn btn-primary" onClick={onBack}>Back</button>
+      <div>
+        <button class='idk' onClick={handleStartNavigation} disabled={!useMap}>Start Navigation</button>
+        <button class='idk' onClick={handleStopNavigation} disabled={stopButton}>Stop Navigation</button>
+      </div>
+        <button class='idk' onClick={onBack}>Back</button>
     </div>
   );
 }

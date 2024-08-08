@@ -151,7 +151,7 @@ function MapPosePage({ mapName, onBack }) {
 
   return (
     <div>
-      <h1>Poses for Map: {mapName}</h1>
+      <h1>Navigation: {mapName}</h1>
       <div>
         {poses.map(pose => (
           <button onClick={() => handleGoalPoseDetails(pose)} key={pose}>{pose}</button>

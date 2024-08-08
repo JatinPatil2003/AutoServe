@@ -10,7 +10,8 @@ from models.model import Goal
 
 MONGO_URI = "mongodb+srv://jatinpatil2003:iqEtcmVkve9wxP15@mydb.nk83zvt.mongodb.net/"
 
-mongodb = MongoClient(MONGO_URI)
+# mongodb = MongoClient(MONGO_URI)
+mongodb = MongoClient('localhost', 27017)
 
 db = mongodb['autoserve']
 fs = gridfs.GridFS(db, collection='maps')
@@ -78,13 +79,18 @@ def listMaps():
 
         return list(map_files)
 
+
     except Exception as e:
         print(f"An error occurred: {e}")
         return []
 
-# save_to_mongodb('cafe_3d')
-# print(load_from_mongodb('cafe_3d'))
-# print(list_all_maps())
+# saveMap('cafe')
+# saveMap('cafe_3d')
+# saveMap('new_cafe')
+# loadMap('cafe')
+# loadMap('cafe_3d')
+# loadMap('new_cafe')
+# print(listMaps())
 
 def saveGoal(goal: Goal):
     goal_db = {
