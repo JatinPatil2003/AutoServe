@@ -11,3 +11,7 @@ class Goal(Pose):
 
 class MapName(BaseModel):
     name: str
+
+class Velocity(BaseModel):
+    linear: float
+    angular: float

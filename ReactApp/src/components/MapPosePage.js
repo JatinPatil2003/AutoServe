@@ -20,7 +20,7 @@ function MapPosePage({ mapName, onBack }) {
     )
       .then((response) => response.json())
       .then((data) => setPoses(data));
-  }, []);
+  }, [mapName]);
 
   useEffect(() => {
     const fetchRobotLocation = async () => {
