@@ -54,7 +54,7 @@ function NavigationPage({ onBack }) {
 
   if (startNav) {
     return (
-      <MapPosePage mapName={selectedMap} onBack={() => setStartNav(false)} />
+      <MapPosePage mapName={selectedMap} onBack={() => {setStartNav(false); setUseMap(true);}} />
     );
   }
 

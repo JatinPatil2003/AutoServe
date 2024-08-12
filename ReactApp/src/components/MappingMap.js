@@ -25,7 +25,7 @@ function MappingMap() {
 
     fetchMapData();
 
-    const intervalId = setInterval(fetchMapData, 5000);
+    const intervalId = setInterval(fetchMapData, 3000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -41,7 +41,7 @@ function MappingMap() {
         }
         const data = await response.json();
         setRobotLocation(data);
-        console.log(data);
+        // console.log(data);
       } catch (error) {
         console.error("Error fetching robot location:", error);
       }
@@ -49,7 +49,7 @@ function MappingMap() {
 
     fetchRobotLocation();
 
-    const intervalId = setInterval(fetchRobotLocation, 100);
+    const intervalId = setInterval(fetchRobotLocation, 200);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -70,19 +70,18 @@ function MappingMap() {
     return "gray"; // Unknown
   };
 
-  const isOccupied = (value) => value === 100;
-
   useEffect(() => {
     const drawRobot = (ctx, location, mapInfo, cellWidth, cellHeight) => {
       const { x, y, theta } = location;
       // const robotX = (x - mapInfo.origin.position.x) / mapInfo.resolution * cellWidth;
       // const robotY = (y - mapInfo.origin.position.y) / mapInfo.resolution * cellHeight;
       const robotX =
-        ((-x - mapInfo.origin.position.x) / mapInfo.resolution) * cellWidth;
+        (mapInfo.width - ((x - mapInfo.origin.position.x) / mapInfo.resolution)) * cellWidth;
       const robotY =
         ((y - mapInfo.origin.position.y) / mapInfo.resolution) * cellHeight;
 
-      // console.log(x, y, robotX, robotY);
+      console.log(x, y, robotX, robotY);
+      console.log(mapInfo.origin.position.x, mapInfo.origin.position.y)
       // Draw robot icon
       const iconSize = 25; // Adjust the icon size if needed
       ctx.save();
@@ -109,18 +108,6 @@ function MappingMap() {
 
           // Draw rectangle representing map cell
           ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
-
-          // Optional: Draw border for occupied cells
-        //   if (isOccupied(val)) {
-        //     ctx.strokeStyle = "black";
-        //     ctx.lineWidth = 1; // Set the border width to 1 pixel
-        //     ctx.strokeRect(
-        //       x * cellWidth,
-        //       y * cellHeight,
-        //       cellWidth,
-        //       cellHeight
-        //     );
-        //   }
         }
       }
     };
@@ -138,6 +125,8 @@ function MappingMap() {
         canvas.height = window_height - height / 1.5;
         canvas.width = (width * window_height) / height - width / 1.5;
       }
+      // canvas.width = width;
+      // canvas.height = height;
 
       // Define cell size based on canvas size and map dimensions
       const cellWidth = canvas.width / width;

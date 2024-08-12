@@ -29,14 +29,14 @@ function JoystickControl({ onControl}) {
 
   return (
     <Joystick
-      size={200}
-      stickSize={100}
+      size={150}
+      stickSize={80}
       baseColor="lightblue"
       stickColor="blue"
       move={handleMove}
       stop={handleStop}
       start={handleStart}
-      minDistance={20}
+      minDistance={70}
     />
   );
 }

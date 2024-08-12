@@ -52,7 +52,7 @@ function MapPosePage({ mapName, onBack }) {
 
     fetchRobotLocation();
 
-    const intervalId = setInterval(fetchRobotLocation, 400);
+    const intervalId = setInterval(fetchRobotLocation, 500);
 
     return () => clearInterval(intervalId);
   }, [changeNavStatus]);

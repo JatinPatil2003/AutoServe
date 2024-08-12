@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import JoystickControl from "./JoystickView";
 import MappingMap from "./MappingMap";
 
@@ -6,6 +6,8 @@ function MappingPage({ onBack }) {
   const [mapName, setMapName] = useState("");
   const [linear, setLinear] = useState(0.0);
   const [angular, setAngular] = useState(0.0);
+  const linearRef = useRef(linear);
+  const angularRef = useRef(angular);
 
   const handleStopMapping = () => {
     fetch("http://13.201.82.2:5747/mapping/stop")
@@ -36,6 +38,11 @@ function MappingPage({ onBack }) {
   };
 
   useEffect(() => {
+    linearRef.current = linear;
+    angularRef.current = angular;
+  }, [linear, angular]);
+
+  useEffect(() => {
     const setvelocity = async () => {
       try {
         const response = await fetch("http://13.201.82.2:5747/joystick/control", {
@@ -43,7 +50,7 @@ function MappingPage({ onBack }) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ linear: linear, angular: angular }),
+          body: JSON.stringify({ linear: linearRef.current, angular: angularRef.current }),
         });
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -57,10 +64,10 @@ function MappingPage({ onBack }) {
 
     setvelocity();
 
-    // const intervalId = setInterval(setvelocity, 200);
+    const intervalId = setInterval(setvelocity, 500);
 
-    // return () => clearInterval(intervalId);
-  }, [linear, angular]);
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <div>

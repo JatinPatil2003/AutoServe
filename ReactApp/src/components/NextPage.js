@@ -11,7 +11,7 @@ function NextPage({ onBack }) {
       <NavigationPage
         onBack={() => {
           setOperation(null);
-          onBack();
+          // onBack();
         }}
       />
     );
@@ -22,7 +22,7 @@ function NextPage({ onBack }) {
       <MappingPage
         onBack={() => {
           setOperation(null);
-          onBack();
+          // onBack();
         }}
       />
     );
