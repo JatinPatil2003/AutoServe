@@ -9,7 +9,7 @@ import psutil
 from ros.topics import get_map_msg, get_location_msg
 from ros.service import set_initial_pose
 from ros.action import send_goal, cancel_goal, get_navigation_feedback
-from mongodb.db import listMaps, listGoal, saveGoal, getGoal
+from mongodb.db import listMaps, listGoal, saveGoal, getGoal, loadMap
 from models.model import MapName, Goal, Pose
 
 router = APIRouter()
@@ -41,6 +41,7 @@ async def list_maps():
 async def save_map_data(name: MapName):
     global map_name
     map_name = name.name
+    loadMap(map_name)
     return {"message": "Map data saved successfully"}
 
 @router.get("/navigation/list/pose/{name}")

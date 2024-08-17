@@ -9,7 +9,7 @@ import psutil
 from ros.topics import set_joystick_velocity, get_location_mapping_msg, get_map_msg
 from ros.service import set_initial_pose
 from ros.action import send_goal, cancel_goal, get_navigation_feedback
-from mongodb.db import listMaps, listGoal, saveGoal, getGoal
+from mongodb.db import listMaps, listGoal, saveGoal, getGoal, saveMap
 from models.model import MapName, Goal, Pose, Velocity
 import threading
 
@@ -36,6 +36,7 @@ async def start_navigation():
 async def stop_navigation():
     threading.Thread(target=stop_ros2_launch).start()
     return {'status': 'Stopped'}
+
 @router.post("/joystick/control")
 async def joy_control(velocity: Velocity):
     set_joystick_velocity(velocity)
@@ -54,3 +55,9 @@ async def get_map():
     if map_msg:
         return map_msg
     return None
+
+@router.post("/mapping/save_map")
+async def joy_control(map_name : MapName):
+    process = Popen(['ros2', 'run', 'nav2_map_server', 'map_saver_cli', '-f', f'./maps/{map_name.name}'], preexec_fn=os.setsid)
+    saveMap(map_name.name)
+    return {'saved'}

@@ -17,7 +17,7 @@ function MappingPage({ onBack }) {
   };
 
   const handleSaveMap = () => {
-    fetch("http://13.201.82.2:5747/save_map", {
+    fetch("http://13.201.82.2:5747/mapping/save_map", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
