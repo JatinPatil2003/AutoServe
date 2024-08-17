@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MapView from "./MapView";
+import "./css/MapPosePage.css";
 
 function MapPosePage({ mapName, onBack }) {
   const [poses, setPoses] = useState([]);
@@ -11,6 +12,8 @@ function MapPosePage({ mapName, onBack }) {
   const [navStatusBool, setNavStatusBool] = useState(null);
   const [changeNavStatus, setChangeNavStatus] = useState(null);
   const [remainDist, setRemainDist] = useState(0.0);
+  const [selectPoseMode, setSelectPoseMode] = useState(false);
+  const [goalPoseName, setGoalPoseName] = useState("");
 
   useEffect(() => {
     fetch(
@@ -134,6 +137,7 @@ function MapPosePage({ mapName, onBack }) {
     const data = await response.json();
     console.log(data);
     setGoalPose(data);
+    setGoalPoseName(pose);
     console.log(goalPose);
   };
 
@@ -156,45 +160,63 @@ function MapPosePage({ mapName, onBack }) {
     setOrientation(null);
   };
 
+  const handleSelectPoseClick = () => {
+    setSelectPoseMode(true);
+    setSelectedPose(null);
+    setOrientation(null);
+  };
+
   return (
-    <div>
-      <h1>Navigation: {mapName}</h1>
-      <div>
-        {poses.map((pose) => (
-          <button onClick={() => handleGoalPoseDetails(pose)} key={pose}>
-            {pose}
+    <div className="map-pose-container">
+      <div className="map-pose-left">
+        <div className="map-pose-left-buttons">
+          <h1>Navigation: {mapName}</h1>
+          <div className="map-pose-options">
+            <select onChange={(e) => handleGoalPoseDetails(e.target.value)} value={goalPoseName}>
+              <option value="" >Select Goal</option>
+              {poses.map((pose) => (
+                <option key={pose} value={pose}>
+                  {pose}
+                </option>
+              ))}
+            </select>
+          </div>
+          <input
+            type="text"
+            placeholder="Enter new pose"
+            value={newPose}
+            onChange={(e) => setNewPose(e.target.value)}
+          />
+          <button onClick={handleNavigationGoalStart} disabled={!goalPose}>
+            Go to Goal
           </button>
-        ))}
+          <button onClick={handleNavigationGoalStop} disabled={!navStatusBool}>
+            Cancel Goal
+          </button>
+          <button onClick={handleAddPose} disabled={!newPose}>
+            Add Pose
+          </button>
+          <button onClick={handleSetInitialPose} disabled={!orientation}>
+            Set Initial Pose
+          </button>
+          <button onClick={handleSelectPoseClick}>Select Pose</button>
+        </div>
+        <p>
+          Navigation Status: {navStatus} <br /> Distance Remaining: {remainDist}
+        </p>
+        <button className="back-button" onClick={onBack}>Back</button>
       </div>
-      <input
-        type="text"
-        placeholder="Enter new pose"
-        value={newPose}
-        onChange={(e) => setNewPose(e.target.value)}
-      />
-      <button onClick={handleNavigationGoalStart} disabled={!goalPose}>
-        Go to Goal
-      </button>
-      <button onClick={handleNavigationGoalStop} disabled={!navStatusBool}>
-        Cancel Goal
-      </button>
-      <button onClick={handleAddPose} disabled={!newPose}>
-        Add Pose
-      </button>
-      <button onClick={handleSetInitialPose} disabled={!orientation}>
-        Set Initial Pose
-      </button>
-      <button onClick={onBack}>Back</button>
-      <p>
-        Navigation Status: {navStatus}, Distance Remaining: {remainDist}
-      </p>
-      <MapView
-        setSelectedPose={setSelectedPose}
-        setOrientation={setOrientation}
-        selectedPose={selectedPose}
-        orientation={orientation}
-        goalPose={goalPose}
-      />
+      <div className="map-pose-right">
+        <MapView
+          setSelectedPose={setSelectedPose}
+          setOrientation={setOrientation}
+          selectedPose={selectedPose}
+          orientation={orientation}
+          goalPose={goalPose}
+          setSelectPoseMode={setSelectPoseMode}
+          selectPoseMode={selectPoseMode}
+        />
+      </div>
     </div>
   );
 }

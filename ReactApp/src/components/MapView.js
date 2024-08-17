@@ -8,12 +8,13 @@ const MapView = ({
   selectedPose,
   orientation,
   goalPose,
+  setSelectPoseMode,
+  selectPoseMode,
 }) => {
   const [mapData, setMapData] = useState(null);
   const [robotLocation, setRobotLocation] = useState(null);
   const [robotIcon, setRobotIcon] = useState(null);
   const [poseIcon, setPoseIcon] = useState(null);
-  const [selectPoseMode, setSelectPoseMode] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [initialClick, setInitialClick] = useState(null);
   const canvasRef = useRef(null);
@@ -271,26 +272,17 @@ const MapView = ({
     }
   };
 
-  const handleSelectPoseClick = () => {
-    setSelectPoseMode(true);
-    setSelectedPose(null);
-    setOrientation(null);
-  };
-
   return (
     <div>
-      <button onClick={handleSelectPoseClick}>Select Pose</button>
-      <div>
-        <center>
-          <canvas
-            ref={canvasRef}
-            style={{ border: "1px solid black" }}
-            onMouseDown={handleCanvasMouseDown}
-            onMouseMove={handleCanvasMouseMove}
-            onMouseUp={handleCanvasMouseUp}
-          />
-        </center>
-      </div>
+      <center>
+        <canvas
+          ref={canvasRef}
+          style={{ border: "1px solid black" }}
+          onMouseDown={handleCanvasMouseDown}
+          onMouseMove={handleCanvasMouseMove}
+          onMouseUp={handleCanvasMouseUp}
+        />
+      </center>
     </div>
   );
 };

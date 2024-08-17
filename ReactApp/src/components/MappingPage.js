@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import JoystickControl from "./JoystickView";
 import MappingMap from "./MappingMap";
+import "./css/MappingPage.css";
 
 function MappingPage({ onBack }) {
   const [mapName, setMapName] = useState("");
@@ -70,22 +71,30 @@ function MappingPage({ onBack }) {
   }, []);
 
   return (
-    <div>
-      <h1>Mapping Mode</h1>
-      <input
-        type="text"
-        placeholder="Enter map name"
-        value={mapName}
-        onChange={(e) => setMapName(e.target.value)}
-      />
-      <button onClick={handleSaveMap} disabled={!mapName}>
-        Save Map
-      </button>
-      <button onClick={handleStopMapping}>Stop Mapping</button>
-      <button onClick={handleStartMapping}>Start Mapping</button>
-      <button onClick={onBack}>Back</button>
-      <JoystickControl onControl={handleJoystickControl} />
-      <MappingMap />
+    <div className="mapping-container">
+      <div className="mapping-left">
+        <div className="mapping-left-top">
+          <h1>Mapping Mode</h1>
+          <input
+            type="text"
+            placeholder="Enter map name"
+            value={mapName}
+            onChange={(e) => setMapName(e.target.value)}
+          />
+          <button onClick={handleSaveMap} disabled={!mapName}>
+            Save Map
+          </button>
+          <button onClick={handleStopMapping}>Stop Mapping</button>
+          <button onClick={handleStartMapping}>Start Mapping</button>
+          <button onClick={onBack}>Back</button>
+        </div>
+        <div className="joystick-control">
+          <JoystickControl onControl={handleJoystickControl} />
+        </div>
+      </div>
+      <div className="mapping-right">
+        <MappingMap className="mapping-map" />
+      </div>
     </div>
   );
 }
