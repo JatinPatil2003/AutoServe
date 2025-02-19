@@ -7,7 +7,7 @@
             <plugin>gazebo_ros2_control/GazeboSystem</plugin>
         </hardware>
 
-        <joint name="base2plate_1">
+        <joint name="${robot_namespace}_base2plate_1">
             <command_interface name="position">
               <param name="min">-0.8</param>
               <param name="max">0.8</param>
@@ -15,7 +15,7 @@
             <state_interface name="position" />
         </joint>
 
-        <joint name="base2plate_2">
+        <joint name="${robot_namespace}_base2plate_2">
             <command_interface name="position">
               <param name="min">-0.8</param>
               <param name="max">0.8</param>

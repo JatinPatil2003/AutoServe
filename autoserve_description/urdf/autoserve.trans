@@ -1,45 +1,45 @@
 <?xml version="1.0" ?>
 <robot name="autoserve" xmlns:xacro="http://www.ros.org/wiki/xacro" >
 
-<transmission name="base2rightw_tran">
+<transmission name="${robot_namespace}_base2rightw_tran">
   <type>transmission_interface/SimpleTransmission</type>
-  <joint name="base2rightw">
+  <joint name="${robot_namespace}_base2rightw">
     <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
   </joint>
-  <actuator name="base2rightw_actr">
-    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-    <mechanicalReduction>1</mechanicalReduction>
-  </actuator>
-</transmission>
-
-<transmission name="base2leftw_tran">
-  <type>transmission_interface/SimpleTransmission</type>
-  <joint name="base2leftw">
-    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-  </joint>
-  <actuator name="base2leftw_actr">
+  <actuator name="${robot_namespace}_base2rightw_actr">
     <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     <mechanicalReduction>1</mechanicalReduction>
   </actuator>
 </transmission>
 
-<transmission name="base2plate_1_tran">
+<transmission name="${robot_namespace}_base2leftw_tran">
   <type>transmission_interface/SimpleTransmission</type>
-  <joint name="base2plate_1">
+  <joint name="${robot_namespace}_base2leftw">
+    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="${robot_namespace}_base2leftw_actr">
+    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<transmission name="${robot_namespace}_base2plate_1_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="${robot_namespace}_base2plate_1">
     <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
   </joint>
-  <actuator name="base2plate_1_actr">
+  <actuator name="${robot_namespace}_base2plate_1_actr">
     <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     <mechanicalReduction>1</mechanicalReduction>
   </actuator>
 </transmission>
 
-<transmission name="base2plate_2_tran">
+<transmission name="${robot_namespace}_base2plate_2_tran">
   <type>transmission_interface/SimpleTransmission</type>
-  <joint name="base2plate_2">
+  <joint name="${robot_namespace}_base2plate_2">
     <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
   </joint>
-  <actuator name="base2plate_2_actr">
+  <actuator name="${robot_namespace}_base2plate_2_actr">
     <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     <mechanicalReduction>1</mechanicalReduction>
   </actuator>

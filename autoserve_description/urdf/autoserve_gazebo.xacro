@@ -10,26 +10,26 @@
 <xacro:property name="plate" value="Gazebo/Green" />
 
   <!-- Wheels -->
-  <gazebo reference="left_wheel">
+  <gazebo reference="${robot_namespace}_left_wheel">
     <material>${wheels}</material>
-    <mu1>1000.0</mu1>
-    <mu2>1000.0</mu2>
+    <mu1>0.1</mu1>
+    <mu2>0.1</mu2>
     <maxContacts>1</maxContacts>
     <selfCollide>true</selfCollide>
     <gravity>true</gravity>
   </gazebo>
 
-  <gazebo reference="right_wheel">
+  <gazebo reference="${robot_namespace}_right_wheel">
     <material>${wheels}</material>
-    <mu1>1000.0</mu1>
-    <mu2>1000.0</mu2>
+    <mu1>0.1</mu1>
+    <mu2>0.1</mu2>
     <maxContacts>1</maxContacts>
     <selfCollide>true</selfCollide>
     <gravity>true</gravity>
   </gazebo>
     
   <!-- Caster Wheels -->
-  <gazebo reference="base_link">
+  <gazebo reference="${robot_namespace}_base_link">
     <material>${base_link}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
@@ -38,43 +38,43 @@
     <gravity>true</gravity>
   </gazebo>
 
-  <gazebo reference="base_footprint">
+  <gazebo reference="${robot_namespace}_base_footprint">
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
     <maxContacts>1</maxContacts>
   </gazebo>
 
-  <gazebo reference="depth_camera_1">
+  <gazebo reference="${robot_namespace}_depth_camera_1">
     <material>${depth_cam}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
   </gazebo>
 
-  <gazebo reference="depth_camera_2">
+  <gazebo reference="${robot_namespace}_depth_camera_2">
     <material>${depth_cam}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
   </gazebo>
 
-  <gazebo reference="ydlidar">
+  <gazebo reference="${robot_namespace}_ydlidar">
     <material>${lidar}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
   </gazebo>
 
-  <gazebo reference="imu">
+  <gazebo reference="${robot_namespace}_imu">
     <material>${imu}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
   </gazebo>
 
-  <gazebo reference="plate_1">
+  <gazebo reference="${robot_namespace}_plate_1">
     <material>${plate}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
   </gazebo>
 
-  <gazebo reference="plate_2">
+  <gazebo reference="${robot_namespace}_plate_2">
     <material>${plate}</material>
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
@@ -88,7 +88,7 @@
     </plugin>
   </gazebo> -->
 
-  <gazebo>
+  <!-- <gazebo>
     <plugin name="diff_drive_control" filename="libgazebo_ros_diff_drive.so">
 
       <update_rate>50</update_rate>
@@ -110,25 +110,38 @@
       <robot_base_frame>base_footprint</robot_base_frame>
 
     </plugin>
+  </gazebo> -->
+  <gazebo>
+    <plugin name="${robot_namespace}_object_controller" filename="libgazebo_ros_planar_move.so">
+        <ros>
+          <!-- <namespace>${robot_namespace}</namespace> -->
+          <remapping>cmd_vel:=${robot_namespace}_cmd_vel</remapping>
+          <remapping>odom:=${robot_namespace}_odom</remapping>
+      </ros>
+      <odometry_frame>odom</odometry_frame>
+      <update_rate>20.0</update_rate>
+      <publish_rate>20.0</publish_rate>
+      <robot_base_frame>${robot_namespace}_base_footprint</robot_base_frame>
+    </plugin>
   </gazebo>
 
-  <gazebo reference="imu">
+  <gazebo reference="${robot_namespace}_imu">
     <gravity>true</gravity>
-    <sensor name="imu" type="imu">
+    <sensor name="${robot_namespace}_imu" type="imu">
       <always_on>true</always_on>
       <update_rate>30</update_rate>
       <visualize>true</visualize>
-      <plugin name="my_imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+      <plugin name="${robot_namespace}_my_imu_plugin" filename="libgazebo_ros_imu_sensor.so">
         <ros>
-          <remapping>~/out:=imu</remapping>
+          <remapping>~/out:=${robot_namespace}_imu</remapping>
         </ros>
-        <frame_name>imu</frame_name>
+        <frame_name>${robot_namespace}_imu</frame_name>
       </plugin>
     </sensor>
   </gazebo>
 
-  <gazebo reference="ydlidar">
-    <sensor type="ray" name="head_hokuyo_sensor">
+  <gazebo reference="${robot_namespace}_ydlidar">
+    <sensor type="ray" name="${robot_namespace}_head_hokuyo_sensor">
       <pose>0 0 0 0 0 0</pose>
       <visualize>false</visualize>
       <update_rate>30</update_rate>
@@ -152,23 +165,23 @@
           <stddev>0.01</stddev>
         </noise>
       </ray>
-      <plugin name="my_ray_sensor_plugin" filename="libgazebo_ros_ray_sensor.so">
+      <plugin name="${robot_namespace}_my_ray_sensor_plugin" filename="libgazebo_ros_ray_sensor.so">
         <ros>
-          <remapping>~/out:=scan</remapping>
+          <remapping>~/out:=${robot_namespace}_scan</remapping>
         </ros>
         <output_type>sensor_msgs/LaserScan</output_type>
         <min_intensity>100.0</min_intensity>
-        <frame_name>ydlidar</frame_name>
+        <frame_name>${robot_namespace}_ydlidar</frame_name>
       </plugin>
     </sensor>
   </gazebo>
 
-  <gazebo reference="camera_link">
-    <sensor name="camera" type="depth">
+  <gazebo reference="${robot_namespace}_camera_link">
+    <sensor name="${robot_namespace}_camera" type="depth">
       <pose> 0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>60.0</update_rate>
-      <camera name="camera_link">
+      <camera name="${robot_namespace}_camera_link">
         <horizontal_fov>1.047198</horizontal_fov>
         <image>
           <width>640</width>
@@ -180,11 +193,11 @@
           <far>50</far>
         </clip>
       </camera>
-      <plugin name="depth_camera_controller_1" filename="libgazebo_ros_camera.so">
+      <plugin name="${robot_namespace}_depth_camera_controller_1" filename="libgazebo_ros_camera.so">
         <baseline>0.2</baseline>
         <alwaysOn>true</alwaysOn>
         <updateRate>0.0</updateRate>
-        <frame_name>camera_link_optical</frame_name>
+        <frame_name>${robot_namespace}_camera_link_optical</frame_name>
         <pointCloudCutoff>0.1</pointCloudCutoff>
         <pointCloudCutoffMax>50.0</pointCloudCutoffMax>
         <distortionK1>0</distortionK1>
@@ -201,12 +214,12 @@
     </sensor>
   </gazebo>
 
-  <gazebo reference="depth_camera_2">
-    <sensor name="camera_2" type="depth">
+  <gazebo reference="${robot_namespace}_depth_camera_2">
+    <sensor name="${robot_namespace}_camera_2" type="depth">
       <pose> 0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>60.0</update_rate>
-      <camera name="depth_camera_2">
+      <camera name="${robot_namespace}_depth_camera_2">
         <horizontal_fov>1.047198</horizontal_fov>
         <image>
           <width>640</width>
@@ -218,11 +231,11 @@
           <far>30</far>
         </clip>
       </camera>
-      <plugin name="depth_camera_controller_2" filename="libgazebo_ros_camera.so">
+      <plugin name="${robot_namespace}_depth_camera_controller_2" filename="libgazebo_ros_camera.so">
         <baseline>0.2</baseline>
         <alwaysOn>true</alwaysOn>
         <updateRate>0.0</updateRate>
-        <frame_name>depth_camera_2</frame_name>
+        <frame_name>${robot_namespace}_depth_camera_2</frame_name>
         <pointCloudCutoff>0.1</pointCloudCutoff>
         <pointCloudCutoffMax>10.0</pointCloudCutoffMax>
         <distortionK1>0</distortionK1>

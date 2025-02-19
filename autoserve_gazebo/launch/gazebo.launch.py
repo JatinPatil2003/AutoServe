@@ -35,25 +35,38 @@ def generate_launch_description():
 
     env_var = SetEnvironmentVariable("GAZEBO_MODEL_PATH", autoserve_description_share)
 
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [
-                    FindPackageShare("autoserve_description"),
-                    "urdf",
-                    "autoserve.xacro",
-                ]
-            ),
-        ]
+    robot_description_file_1 = ParameterValue(
+        Command(
+            [
+                "xacro ", os.path.join(get_package_share_directory("autoserve_description"),"urdf","autoserve.xacro")," namespace:=autoserve_1"
+            ]
+        ),
+        value_type=str,
     )
-    robot_description = {"robot_description": robot_description_content}
+    robot_description_1 = {"robot_description": robot_description_file_1}
 
-    robot_state_publisher_node = Node(
+    robot_description_file_2 = ParameterValue(
+        Command(
+            [
+                "xacro ", os.path.join(get_package_share_directory("autoserve_description"),"urdf","autoserve.xacro")," namespace:=autoserve_2"
+            ]
+        ),
+        value_type=str,
+    )
+    robot_description_2 = {"robot_description": robot_description_file_2}
+
+    robot_state_publisher_node_1 = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
-        parameters=[robot_description],
+        parameters=[robot_description_1],
+        namespace="autoserve_1",
+    )
+
+    robot_state_publisher_node_2 = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        parameters=[robot_description_2],
+        namespace="autoserve_2",
     )
 
     world = os.path.join(
@@ -75,26 +88,47 @@ def generate_launch_description():
         )
     )
 
-    spawn_robot = Node(
+    spawn_robot_1 = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
         arguments=[
             "-entity",
-            "autoserve",
+            "autoserve_1",
             "-topic",
-            "robot_description",
+            "/autoserve_1/robot_description",
+            "-x", "0", "-y", "0", "-z", "0.05",
         ],
+        namespace="autoserve_1",
         output="screen",
     )
 
-    delayed_spawner = TimerAction(period=5.0, actions=[spawn_robot])
+    spawn_robot_2 = Node(
+        package="gazebo_ros",
+        executable="spawn_entity.py",
+        arguments=[
+            "-entity",
+            "autoserve_2",
+            "-topic",
+            "/autoserve_2/robot_description",
+            "-x", "1", "-y", "0", "-z", "0.05",
+        ],
+        namespace="autoserve_2",
+        output="screen",
+    )
+
+    delayed_spawner_1 = TimerAction(period=5.0, actions=[spawn_robot_1])
+
+    delayed_spawner_2 = TimerAction(period=5.0, actions=[spawn_robot_2])
+
 
     return LaunchDescription(
         [
             env_var,
             start_gazebo_server,
             start_gazebo_client,
-            robot_state_publisher_node,
-            delayed_spawner,
+            robot_state_publisher_node_1,
+            robot_state_publisher_node_2,
+            delayed_spawner_1,
+            delayed_spawner_2,
         ]
     )

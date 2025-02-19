@@ -1,11 +1,14 @@
 <?xml version="1.0" ?>
 <robot name="autoserve" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+<xacro:arg name="namespace" default="autoserve"></xacro:arg>
+<xacro:property name="robot_namespace" value="${xacro.arg('namespace')}" />
+
 <xacro:include filename="$(find autoserve_description)/urdf/materials.xacro" />
 <xacro:include filename="$(find autoserve_description)/urdf/autoserve_gazebo.xacro" />
 <xacro:include filename="$(find autoserve_description)/urdf/autoserve.trans" />
 
-<link name="base_footprint">
+<link name="${robot_namespace}_base_footprint">
   <!-- <collision>
     <origin xyz="0.0 0.0 0.003" rpy="0 0 0"/>
     <geometry>
@@ -14,7 +17,7 @@
   </collision> -->
 </link>
 
-<link name="base_link">
+<link name="${robot_namespace}_base_link">
   <inertial>
     <origin xyz="0.017764143959187594 -0.00010931568495259127 0.24169621947403908" rpy="0 0 0"/>
     <mass value="10.036859574001216"/>
@@ -41,14 +44,14 @@
   </collision>
 </link>
 
-<joint name="footprint2baselink" type="fixed">
-  <parent link="base_footprint"/>
-  <child link="base_link"/>
+<joint name="${robot_namespace}_footprint2baselink" type="fixed">
+  <parent link="${robot_namespace}_base_footprint"/>
+  <child link="${robot_namespace}_base_link"/>
   <origin xyz="0 0 0" rpy="0 0 0"/>
   <axis xyz="0 0 0"/>
 </joint>
 
-<link name="imu">
+<link name="${robot_namespace}_imu">
   <inertial>
     <origin xyz="-3.552713678800501e-17 -1.7763568394002506e-16 0.0004999999999999727" rpy="0 0 0"/>
     <mass value="0.00016557850022283878"/>
@@ -69,7 +72,7 @@
   </collision>
 </link>
 
-<link name="ydlidar">
+<link name="${robot_namespace}_ydlidar">
   <inertial>
     <origin xyz="-0.030294099570319616 0.03099999999999979 0.037701142222791084" rpy="0 0 0"/>
     <mass value="1.1515616542314233"/>
@@ -90,7 +93,7 @@
   </collision>
 </link>
 
-<link name="camera_link">
+<link name="${robot_namespace}_camera_link">
   <inertial>
     <origin xyz="0.011951472788559625 0.022747274204167237 -6.086448440437153e-05" rpy="0 0 0"/>
     <mass value="0.35132131581082054"/>
@@ -111,16 +114,16 @@
   </collision>
 </link>
 
-<link name="camera_link_optical"/>
+<link name="${robot_namespace}_camera_link_optical"/>
 
-<joint name="camera2camera_1" type="fixed">
-  <parent link="camera_link"/>
-  <child link="camera_link_optical"/>
+<joint name="${robot_namespace}_camera2camera_1" type="fixed">
+  <parent link="${robot_namespace}_camera_link"/>
+  <child link="${robot_namespace}_camera_link_optical"/>
   <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
   <axis xyz="0 0 0"/>
 </joint>
 
-<link name="depth_camera_2">
+<link name="${robot_namespace}_depth_camera_2">
   <inertial>
     <origin xyz="0.01195115490287238 0.02274721773464422 -6.09413650859425e-05" rpy="0 0 0"/>
     <mass value="0.35132131581082054"/>
@@ -162,7 +165,7 @@
   </collision>
 </link> -->
 
-<link name="right_wheel">
+<link name="${robot_namespace}_right_wheel">
   <inertial>
     <origin xyz="1.4446033464149508e-16 -0.015000000000000263 2.0816681711721685e-16" rpy="0 0 0"/>
     <mass value="1.528210189769456086"/>
@@ -183,7 +186,7 @@
   </collision>
 </link>
 
-<link name="left_wheel">
+<link name="${robot_namespace}_left_wheel">
   <inertial>
     <origin xyz="1.6623077439054263e-16 0.01500000000000018 1.3877787807814457e-16" rpy="0 0 0"/>
     <mass value="1.528210189769456086"/>
@@ -204,7 +207,7 @@
   </collision>
 </link>
 
-<link name="plate_1">
+<link name="${robot_namespace}_plate_1">
   <inertial>
     <origin xyz="-0.0800003178856868 0.1549999435304768 0.09999999999999992" rpy="0 0 0"/>
     <mass value="0.6110849993971129"/>
@@ -225,7 +228,7 @@
   </collision>
 </link>
 
-<link name="plate_2">
+<link name="${robot_namespace}_plate_2">
   <inertial>
     <origin xyz="-0.08000031788568687 0.1549999435304768 0.3299999999999999" rpy="0 0 0"/>
     <mass value="0.6110849993971129"/>
@@ -246,22 +249,22 @@
   </collision>
 </link>
 
-<joint name="base2imu" type="fixed">
+<joint name="${robot_namespace}_base2imu" type="fixed">
   <origin xyz="0.0 0.0 0.203" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="imu"/>
+  <parent link="${robot_namespace}_base_link"/>
+  <child link="${robot_namespace}_imu"/>
 </joint>
 
-<joint name="base2lidar" type="fixed">
+<joint name="${robot_namespace}_base2lidar" type="fixed">
   <origin xyz="0.162 0.0 0.25" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="ydlidar"/>
+  <parent link="${robot_namespace}_base_link"/>
+  <child link="${robot_namespace}_ydlidar"/>
 </joint>
 
-<joint name="base2camera_1" type="fixed">
+<joint name="${robot_namespace}_base2camera_1" type="fixed">
   <origin xyz="0.2 -0.0 0.1705" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="camera_link"/>
+  <parent link="${robot_namespace}_base_link"/>
+  <child link="${robot_namespace}_camera_link"/>
 </joint>
 
 <!-- <joint name="base2camera_2" type="fixed">
@@ -270,40 +273,40 @@
   <child link="depth_camera_2"/>
 </joint> -->
 
-<joint name="base2camera_2" type="fixed">
+<joint name="${robot_namespace}_base2camera_2" type="fixed">
   <origin xyz="0.105108 -0.0 1.3" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="depth_camera_2"/>
+  <parent link="${robot_namespace}_base_link"/>
+  <child link="${robot_namespace}_depth_camera_2"/>
 </joint>
 
-<joint name="base2rightw" type="continuous">
+<joint name="${robot_namespace}_base2rightw" type="continuous">
   <origin xyz="0.0 -0.1659 0.05" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="right_wheel"/>
+  <parent link="${robot_namespace}_base_link"/>
+  <child link="${robot_namespace}_right_wheel"/>
   <axis xyz="-0.0 1.0 0.0"/>
 </joint>
 
-<joint name="base2leftw" type="continuous">
+<joint name="${robot_namespace}_base2leftw" type="continuous">
   <origin xyz="0.0 0.1659 0.05" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="left_wheel"/>
+  <parent link="${robot_namespace}_base_link"/>
+  <child link="${robot_namespace}_left_wheel"/>
   <axis xyz="0.0 1.0 0.0"/>
 </joint>
 
 <!-- prismatic -->
 
-<joint name="base2plate_1" type="prismatic">
+<joint name="${robot_namespace}_base2plate_1" type="prismatic">
   <origin xyz="0.0 -0.0 0.303" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="plate_1"/>
+  <parent link="${robot_namespace}_base_link"/>
+  <child link="${robot_namespace}_plate_1"/>
   <axis xyz="1.0 -0.0 -0.0"/>
   <limit upper="0.08" lower="-0.08" effort="100" velocity="100"/>
 </joint>
 
-<joint name="base2plate_2" type="prismatic">
+<joint name="${robot_namespace}_base2plate_2" type="prismatic">
   <origin xyz="0.0 -0.0 0.533" rpy="0 0 0"/>
-  <parent link="base_link"/>
-  <child link="plate_2"/>
+  <parent link="${robot_namespace}_base_link"/>
+  <child link="${robot_namespace}_plate_2"/>
   <axis xyz="1.0 -0.0 -0.0"/>
   <limit upper="0.08" lower="-0.08" effort="100" velocity="100"/>
 </joint>
