@@ -119,8 +119,8 @@
           <remapping>odom:=${robot_namespace}_odom</remapping>
       </ros>
       <odometry_frame>odom</odometry_frame>
-      <update_rate>20.0</update_rate>
-      <publish_rate>20.0</publish_rate>
+      <update_rate>50.0</update_rate>
+      <publish_rate>50.0</publish_rate>
       <robot_base_frame>${robot_namespace}_base_footprint</robot_base_frame>
     </plugin>
   </gazebo>
