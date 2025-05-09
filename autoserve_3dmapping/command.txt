@@ -1,0 +1,4 @@
+ros2 run nav2_map_server map_saver_cli -f cafe --ros-args -r /map:=/elevation_grid
+
+ros2 run octomap_server octomap_saver --ros-args -p full:=true -p octomap_path:=my_map.bt
+
