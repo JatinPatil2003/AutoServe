@@ -9,7 +9,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(PCL REQUIRED COMPONENTS filters)
+find_package(PCL REQUIRED COMPONENTS filters io common)
 find_package(pcl_conversions REQUIRED)
 find_package(Eigen3 REQUIRED)
 
