@@ -28,4 +28,11 @@ void Controller::computeVelocityCommand(
   cmd = control_law_->calculateRegularVelocity(pose, backward);
 }
 
+void Controller::computeVelocityCommand(
+  const geometry_msgs::msg::Pose & target, const geometry_msgs::msg::Pose & current, 
+  geometry_msgs::msg::Twist & cmd, bool backward)
+{
+  cmd = control_law_->calculateRegularVelocity(target, current, backward);
+}
+
 }  // namespace autoserve_docking

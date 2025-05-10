@@ -16,6 +16,8 @@ find_package(angles REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
+
 
 include_directories(include ${PCL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 add_definitions(${PCL_DEFINITIONS})
@@ -25,12 +27,12 @@ ament_target_dependencies(dock_detector_node rclcpp sensor_msgs geometry_msgs pc
 target_link_libraries(dock_detector_node ${PCL_LIBRARIES})
 
 # Build the main executable
-add_executable(controller_node src/main.cpp src/controller.cpp src/smooth_control_law.cpp)
-ament_target_dependencies(controller_node rclcpp geometry_msgs angles tf2 tf2_ros tf2_geometry_msgs)
+add_executable(docking_server src/main.cpp src/docking_server.cpp src/controller.cpp src/smooth_control_law.cpp)
+ament_target_dependencies(docking_server rclcpp geometry_msgs angles tf2 tf2_ros tf2_geometry_msgs std_srvs)
 
 install(TARGETS
   dock_detector_node
-  controller_node
+  docking_server
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY include/

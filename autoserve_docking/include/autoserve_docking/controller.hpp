@@ -18,6 +18,9 @@ public:
 
   void computeVelocityCommand(
     const geometry_msgs::msg::Pose & pose, geometry_msgs::msg::Twist & cmd, bool backward = false);
+  void computeVelocityCommand(
+    const geometry_msgs::msg::Pose & target, const geometry_msgs::msg::Pose & current, 
+    geometry_msgs::msg::Twist & cmd, bool backward =false);
 
 protected:
   std::unique_ptr<autoserve_docking::SmoothControlLaw> control_law_;
