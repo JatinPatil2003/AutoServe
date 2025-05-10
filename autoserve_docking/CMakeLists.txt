@@ -12,6 +12,10 @@ find_package(geometry_msgs REQUIRED)
 find_package(PCL REQUIRED COMPONENTS filters io common)
 find_package(pcl_conversions REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(angles REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 include_directories(include ${PCL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 add_definitions(${PCL_DEFINITIONS})
@@ -20,9 +24,18 @@ add_executable(dock_detector_node src/dock_detector.cpp)
 ament_target_dependencies(dock_detector_node rclcpp sensor_msgs geometry_msgs pcl_conversions)
 target_link_libraries(dock_detector_node ${PCL_LIBRARIES})
 
+# Build the main executable
+add_executable(controller_node src/main.cpp src/controller.cpp src/smooth_control_law.cpp)
+ament_target_dependencies(controller_node rclcpp geometry_msgs angles tf2 tf2_ros tf2_geometry_msgs)
+
 install(TARGETS
   dock_detector_node
+  controller_node
   DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
