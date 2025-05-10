@@ -26,6 +26,8 @@ public:
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr dock_pose_pub_;
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_pub_;
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_pub2_;
+    rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_pub3_;
+
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr dock_cloud_ref;
 };

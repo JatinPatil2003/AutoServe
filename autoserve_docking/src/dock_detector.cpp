@@ -15,8 +15,9 @@ DockDetector::DockDetector() : Node("dock_detector") {
     scan_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
         "/scan", 10, std::bind(&DockDetector::scanCallback, this, std::placeholders::_1));
 
-    cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("filtered_cloud", 10);
-    cloud_pub2_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("filtered_cloud2", 10);
+    cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("docking_pc", 10);
+    cloud_pub2_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("docking_aligned", 10);
+    cloud_pub3_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("docking_pcd", 10);
     dock_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("dock_pose", 10);
 
     loadDockReferencePCD();
@@ -36,7 +37,7 @@ void DockDetector::saveDockPointCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr&
 
 void DockDetector::loadDockReferencePCD() {
     dock_cloud_ref = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>());
-    if (pcl::io::loadPCDFile<pcl::PointXYZ>("/home/jatin/AutoServe/dock_area.pcd", *dock_cloud_ref) == -1) {
+    if (pcl::io::loadPCDFile<pcl::PointXYZ>("/home/jatin/AutoServe/autoserve_docking/dock_area/dock_area.pcd", *dock_cloud_ref) == -1) {
         throw std::runtime_error("❌ Couldn't read file dock_area.pcd");
     }
     std::cout << "✅ Loaded dock_area.pcd with " << dock_cloud_ref->size() << " points.\n";
@@ -50,7 +51,7 @@ void DockDetector::detectDock(const sensor_msgs::msg::LaserScan::SharedPtr& scan
         float r = scan->ranges[i];
         float angle_deg = angle * 180.0 / M_PI;
 
-        if ((angle_deg >= 135.0 && angle_deg <= 180.0) || (angle_deg >= -180.0 && angle_deg <= -135.0)) {
+        if ((angle_deg >= 145.0 && angle_deg <= 180.0) || (angle_deg >= -180.0 && angle_deg <= -145.0)) {
             if (std::isfinite(r) && r > scan->range_min && r < scan->range_max) {
                 cloud->points.emplace_back(r * std::cos(angle), r * std::sin(angle), 0.0f);
             }
@@ -68,41 +69,46 @@ void DockDetector::detectDock(const sensor_msgs::msg::LaserScan::SharedPtr& scan
 }
 
 void DockDetector::detectDockICP(const pcl::PointCloud<pcl::PointXYZ>::Ptr& live_cloud, const sensor_msgs::msg::LaserScan::SharedPtr& scan) {
-    // Preprocess (downsample) both clouds
-    pcl::VoxelGrid<pcl::PointXYZ> vg;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_ref(new pcl::PointCloud<pcl::PointXYZ>());
-    pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_live(new pcl::PointCloud<pcl::PointXYZ>());
-    vg.setLeafSize(0.002f, 0.002f, 0.002f);  // Downsampling leaf size
-
-    // Downsample the reference dock cloud
-    vg.setInputCloud(dock_cloud_ref);
-    vg.filter(*filtered_ref);
-
-    // Downsample the live scan cloud
-    vg.setInputCloud(live_cloud);
-    vg.filter(*filtered_live);
-
-    // Apply ICP to align live cloud with reference dock cloud
+    pcl::PointCloud<pcl::PointXYZ>::Ptr aligned(new pcl::PointCloud<pcl::PointXYZ>());
+    
     pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-    // icp.setInputSource(live_cloud);
-    // icp.setInputTarget(dock_cloud_ref);
-    icp.setInputSource(filtered_live);
-    icp.setInputTarget(filtered_ref);
-    icp.setMaximumIterations(100);
-    pcl::PointCloud<pcl::PointXYZ> aligned;
-    icp.align(aligned);
+    icp.setInputSource(dock_cloud_ref);
+    icp.setInputTarget(live_cloud);
+    icp.setMaximumIterations(50);
+    icp.align(*aligned);
 
     if (!icp.hasConverged()) {
         std::cerr << "❌ ICP did not converge.\n";
         return;
     }
+
+    if (icp.getFitnessScore() > 1e-4) {
+        std::cerr << "❌ ICP Fitness Score Low.\n";
+        return;
+    }  
+    
+    sensor_msgs::msg::PointCloud2 output_cloud;
+    pcl::toROSMsg(*aligned, output_cloud);
+    output_cloud.header = scan->header;
+    cloud_pub2_->publish(output_cloud);
+
+    pcl::toROSMsg(*dock_cloud_ref, output_cloud);
+    output_cloud.header = scan->header;
+    cloud_pub3_->publish(output_cloud);
+
     Eigen::Matrix4f tf = icp.getFinalTransformation();
+    Eigen::Matrix4f extra_translation = Eigen::Matrix4f::Identity();
+    extra_translation(0, 3) = -0.10f;  // Translate -0.3 meters along x-axis
+
+    // Compose transformations: apply extra translation after ICP alignment
+    tf = tf * extra_translation;
 
     // Extract position (translation) and orientation (rotation)
     float x = tf(0, 3);
     float y = tf(1, 3);
-    float theta = std::atan2(tf(1, 0), tf(0, 0)); // Rotation in 2D
-    std::cout << "Dock Location: x->" << x << " y->" << y << " theta->" << theta << std::endl;
+    float theta = std::atan2(tf(1, 0), tf(0, 0)); 
+    // std::cout << "Score -> " << icp.getFitnessScore() << std::endl;
+    // std::cout << "Dock Location: x->" << x << " y->" << y << " theta->" << theta << std::endl;
 
     geometry_msgs::msg::PoseStamped dock_pose;
     dock_pose.header = scan->header;
