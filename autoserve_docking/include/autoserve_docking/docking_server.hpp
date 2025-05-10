@@ -6,6 +6,8 @@
 #include "geometry_msgs/msg/twist.hpp"
 #include "std_srvs/srv/trigger.hpp"
 #include "autoserve_docking/controller.hpp"
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.h"
 
 namespace autoserve_docking
 {
@@ -16,7 +18,6 @@ public:
   DockingServer();
 
 private:
-  void amclCallback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg);
   void dockCallback(
     const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
     std::shared_ptr<std_srvs::srv::Trigger::Response> response);
@@ -29,10 +30,14 @@ private:
 
   geometry_msgs::msg::Pose current_pose_;
   geometry_msgs::msg::Pose goal_pose_;
+
+  std::shared_ptr<Controller> controller_;
+  tf2_ros::Buffer tf_buffer_;
+  tf2_ros::TransformListener tf_listener_;
+
   bool pose_received_ = false;
   bool goal_active_ = false;
 
-  std::shared_ptr<Controller> controller_;
 };
 
 }  // namespace autoserve_docking
