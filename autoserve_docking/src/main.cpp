@@ -22,7 +22,9 @@
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<autoserve_docking::DockingServer>());
+  auto docking_server = std::make_shared<autoserve_docking::DockingServer>();
+  docking_server->init();
+  rclcpp::spin(docking_server);
   rclcpp::shutdown();
   return 0;
 }

@@ -10,24 +10,29 @@
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_line.h>
 #include <pcl_conversions/pcl_conversions.h>
+#include <mutex>
 
-class DockDetector : public rclcpp::Node {
+class DockDetector {
 public:
-    DockDetector();
+    explicit DockDetector(const rclcpp::Node::SharedPtr& node);
+    bool detectDockICP(geometry_msgs::msg::Pose& dock_pose);
     
-    private:
+private:
     void scanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
     void detectDock(const sensor_msgs::msg::LaserScan::SharedPtr& scan);
     void saveDockPointCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud);
     void loadDockReferencePCD();
-    void detectDockICP(const pcl::PointCloud<pcl::PointXYZ>::Ptr& live_cloud, const sensor_msgs::msg::LaserScan::SharedPtr& scan);
 
+    rclcpp::Node::SharedPtr node_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr scan_sub_;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr dock_pose_pub_;
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_pub_;
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_pub2_;
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_pub3_;
 
-
+    sensor_msgs::msg::LaserScan::SharedPtr latest_scan_msg_;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr latest_cloud_;
     pcl::PointCloud<pcl::PointXYZ>::Ptr dock_cloud_ref;
+
+    std::mutex scan_cb_mutex_;
 };

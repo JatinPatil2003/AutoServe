@@ -45,6 +45,11 @@ geometry_msgs::msg::Twist SmoothControlLaw::calculateRegularVelocity(
   auto ego_coords = EgocentricPolarCoordinates(target, current, backward);
   // Calculate the curvature
   double curvature = calculateCurvature(ego_coords.r, ego_coords.phi, ego_coords.delta);
+  
+  if (fabs(curvature) > 10.0){
+    curvature = 0.0;
+  }
+  
   // Invert the curvature if the robot is moving backwards
   curvature = backward ? -curvature : curvature;
 
@@ -62,6 +67,7 @@ geometry_msgs::msg::Twist SmoothControlLaw::calculateRegularVelocity(
   // Set the velocity to negative if the robot is moving backwards
   v = backward ? -v : v;
 
+  std::cout << "v: " << v << " curvature: " << curvature << std::endl;
   // Compute the angular velocity
   double w = curvature * v;
   // Bound angular velocity between [-max_angular_vel, max_angular_vel]
