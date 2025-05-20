@@ -2,6 +2,7 @@
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
+
 using std::placeholders::_1;
 using std::placeholders::_2;
 
@@ -17,6 +18,9 @@ namespace autoserve_docking
 
     dock_srv_ = create_service<std_srvs::srv::Trigger>(
         "/dock_to_pose", std::bind(&DockingServer::dockCallback, this, _1, _2));
+
+    lifecycle_manager_client_ = create_client<nav2_msgs::srv::ManageLifecycleNodes>(
+        "/lifecycle_manager_localization/manage_nodes");
 
     timer_ = create_wall_timer(
         std::chrono::milliseconds(50),
@@ -99,18 +103,32 @@ namespace autoserve_docking
     if (!goal_active_)
       return;
 
+    try
+    {
+      geometry_msgs::msg::TransformStamped transform_stamped =
+          tf_buffer_.lookupTransform("map", "base_footprint", tf2::TimePointZero);
+
+      current_pose_.position.x = transform_stamped.transform.translation.x;
+      current_pose_.position.y = transform_stamped.transform.translation.y;
+      current_pose_.orientation = transform_stamped.transform.rotation;
+    }
+    catch (const tf2::TransformException &ex)
+    {
+      RCLCPP_WARN(this->get_logger(), "Could not transform base_footprint to map: %s", ex.what());
+      goal_active_ = false;
+      return;
+    }
+
     int dock_detect_count = 0;
 
-    while (!dock_found_ && dock_detect_count < 50)
+    while (!dock_found_ && dock_detect_count < 100)
     {
       if (dock_detector_->detectDockICP(dock_pose_))
       {
         try
         {
           geometry_msgs::msg::TransformStamped transform_stamped =
-              tf_buffer_.lookupTransform("odom", "ydlidar", tf2::TimePointZero);
-
-          map_to_odom_ = tf_buffer_.lookupTransform("map", "odom", tf2::TimePointZero);
+              tf_buffer_.lookupTransform("map", "ydlidar", tf2::TimePointZero);
 
           Eigen::Matrix4f map_to_ydlidar = transformStampedToEigenMatrix(transform_stamped);
 
@@ -134,6 +152,25 @@ namespace autoserve_docking
           return;
         }
         dock_found_ = true;
+
+        if (!lifecycle_manager_client_->wait_for_service(std::chrono::seconds(3))) {
+          RCLCPP_ERROR(this->get_logger(), "Lifecycle manager service not available.");
+          return;
+        }
+      
+        auto request = std::make_shared<nav2_msgs::srv::ManageLifecycleNodes::Request>();
+        request->command = nav2_msgs::srv::ManageLifecycleNodes::Request::PAUSE;
+      
+        auto result_future = lifecycle_manager_client_->async_send_request(request);
+        auto status = result_future.wait_for(std::chrono::seconds(3));
+      
+        if (status == std::future_status::ready && result_future.get()->success) {
+          RCLCPP_INFO(this->get_logger(), "Successfully requested lifecycle transition %d for AMCL.", lifecycle_msgs::msg::Transition::TRANSITION_DEACTIVATE);
+          return;
+        } else {
+          RCLCPP_ERROR(this->get_logger(), "Failed to perform lifecycle transition for AMCL.");
+          return;
+        }
         break;
       }
       ++dock_detect_count;
@@ -146,72 +183,9 @@ namespace autoserve_docking
       return;
     }
 
-    try
-    {
-      geometry_msgs::msg::TransformStamped odom_to_footprint_tf =
-          tf_buffer_.lookupTransform("odom", "base_footprint", tf2::TimePointZero);
-
-      Eigen::Matrix4f map_to_odom = transformStampedToEigenMatrix(map_to_odom_);
-      Eigen::Matrix4f odom_to_footprint = transformStampedToEigenMatrix(odom_to_footprint_tf);
-
-      // Eigen::Matrix4f map_to_footprint = map_to_odom * odom_to_footprint;
-      Eigen::Matrix4f map_to_footprint = odom_to_footprint;
-
-
-      Eigen::Vector3f translation = map_to_footprint.block<3, 1>(0, 3);
-      Eigen::Matrix3f rotation = map_to_footprint.block<3, 3>(0, 0);
-      float theta = std::atan2(rotation(1, 0), rotation(0, 0));
-
-      current_pose_.position.x = translation.x();
-      current_pose_.position.y = translation.y();
-      current_pose_.orientation.z = std::sin(theta / 2.0);
-      current_pose_.orientation.w = std::cos(theta / 2.0);
-    }
-    catch (const tf2::TransformException &ex)
-    {
-      RCLCPP_WARN(this->get_logger(), "Could not transform base_footprint to map: %s", ex.what());
-      goal_active_ = false;
-      return;
-    }
 
     geometry_msgs::msg::Twist cmd_vel;
     controller_->computeVelocityCommand(dock_pose_, current_pose_, cmd_vel, true);
-
-    // RCLCPP_INFO(this->get_logger(), "Velocity: %f, %f", cmd_vel.linear.x, cmd_vel.angular.z);
-
-    // Check distance to goal
-    double dx = dock_pose_.position.x - current_pose_.position.x;
-    double dy = dock_pose_.position.y - current_pose_.position.y;
-    double dist = std::sqrt(dx * dx + dy * dy);
-
-    // Check angle to goal
-    double angle_to_goal = std::atan2(dy, dx);  // Angle of the line to the goal from the current position
-    // Extract the yaw (z-axis rotation) from the quaternion of the current orientation
-    double quaternion_x = current_pose_.orientation.x;
-    double quaternion_y = current_pose_.orientation.y;
-    double quaternion_z = current_pose_.orientation.z;
-    double quaternion_w = current_pose_.orientation.w;
-    // Convert quaternion to yaw (z-axis rotation)
-    double siny_cosp = 2.0 * (quaternion_w * quaternion_z + quaternion_x * quaternion_y);
-    double cosy_cosp = 1.0 - 2.0 * (quaternion_y * quaternion_y + quaternion_z * quaternion_z);
-    double yaw = std::atan2(siny_cosp, cosy_cosp);  // Yaw angle (orientation)
-
-    double angle_error = angle_to_goal - yaw;  // Difference between current orientation and desired angle
-
-    // Normalize the angle error to be between -pi and pi
-    if (angle_error > M_PI) {
-        angle_error -= 2 * M_PI;
-    } else if (angle_error < -M_PI) {
-        angle_error += 2 * M_PI;
-    }
-
-    if (dist < 0.02){
-      RCLCPP_INFO(this->get_logger(), "Goal reached dist. Stopping...");
-      cmd_vel.linear.x = 0.0;
-      cmd_vel.angular.z = 0.0;
-      goal_active_ = false;
-    }
-
 
     if (cmd_vel.linear.x == 0.0 && cmd_vel.angular.z == 0.0)
     {
@@ -219,6 +193,25 @@ namespace autoserve_docking
       cmd_vel.linear.x = 0.0;
       cmd_vel.angular.z = 0.0;
       goal_active_ = false;
+
+      if (!lifecycle_manager_client_->wait_for_service(std::chrono::seconds(3))) {
+        RCLCPP_ERROR(this->get_logger(), "Lifecycle manager service not available.");
+        return;
+      }
+    
+      auto request = std::make_shared<nav2_msgs::srv::ManageLifecycleNodes::Request>();
+        request->command = nav2_msgs::srv::ManageLifecycleNodes::Request::RESUME;
+    
+      auto result_future = lifecycle_manager_client_->async_send_request(request);
+      auto status = result_future.wait_for(std::chrono::seconds(3));
+    
+      if (status == std::future_status::ready && result_future.get()->success) {
+        RCLCPP_INFO(this->get_logger(), "Successfully requested lifecycle transition %d for AMCL.", lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
+        return;
+      } else {
+        RCLCPP_ERROR(this->get_logger(), "Failed to perform lifecycle transition for AMCL.");
+        return;
+      }
     }
 
     cmd_vel_pub_->publish(cmd_vel);

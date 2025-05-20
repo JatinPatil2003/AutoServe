@@ -42,6 +42,12 @@ void DockDetector::scanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg
             }
         }
     }
+
+    pcl::VoxelGrid<pcl::PointXYZ> voxel;
+    voxel.setInputCloud(cloud);
+    voxel.setLeafSize(0.01f, 0.01f, 0.01f);
+    voxel.filter(*cloud);
+
     sensor_msgs::msg::PointCloud2 output_cloud;
     pcl::toROSMsg(*cloud, output_cloud);
     output_cloud.header = msg->header;
@@ -52,10 +58,12 @@ void DockDetector::scanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg
     cloud_pub3_->publish(output_cloud);
 
     latest_cloud_ = cloud;
+
+    // saveDockPointCloud(cloud);
 }
 
 void DockDetector::saveDockPointCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud) {
-    if (pcl::io::savePCDFileBinary("/home/jatin/AutoServe/autoserve_docking/dock_pcd/dock_pcd.pcd", *cloud) == -1) {
+    if (pcl::io::savePCDFileBinary("/home/jatin/AutoServe/autoserve_docking/dock_pcd/dock_pcd_2.pcd", *cloud) == -1) {
         std::cerr << "❌ Failed to save PCD file\n";
     } else {
         std::cout << "✅ Saved dock_area.pcd with " << cloud->size() << " points.\n";
@@ -64,7 +72,7 @@ void DockDetector::saveDockPointCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr&
 
 void DockDetector::loadDockReferencePCD() {
     dock_cloud_ref = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>());
-    if (pcl::io::loadPCDFile<pcl::PointXYZ>("/home/jatin/AutoServe/autoserve_docking/dock_pcd/dock_pcd.pcd", *dock_cloud_ref) == -1) {
+    if (pcl::io::loadPCDFile<pcl::PointXYZ>("/home/jatin/AutoServe/autoserve_docking/dock_pcd/dock_pcd_2.pcd", *dock_cloud_ref) == -1) {
         throw std::runtime_error("❌ Couldn't read file dock_pcd.pcd");
     }
     std::cout << "✅ Loaded dock_pcd.pcd with " << dock_cloud_ref->size() << " points.\n";
@@ -114,7 +122,7 @@ bool DockDetector::detectDockICP(geometry_msgs::msg::Pose& dock_pose) {
     pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
     icp.setInputSource(dock_cloud_ref);
     icp.setInputTarget(latest_cloud_);
-    icp.setMaximumIterations(50);
+    icp.setMaximumIterations(500);
     icp.align(*aligned);
 
     if (!icp.hasConverged()) {
@@ -122,10 +130,12 @@ bool DockDetector::detectDockICP(geometry_msgs::msg::Pose& dock_pose) {
         return false;
     }
 
-    if (icp.getFitnessScore() > 1e-4) {
-        std::cerr << "❌ ICP Fitness Score Low.\n";
-        return false;
-    }  
+    // if (icp.getFitnessScore() > 0.0001) {
+    //     std::cerr << "❌ ICP Fitness Score Low. Score:= " << icp.getFitnessScore() << "\n";
+    //     return false;
+    // }  
+
+    std::cerr << "✅ ICP Score:= " << icp.getFitnessScore() << "\n";
     
     sensor_msgs::msg::PointCloud2 output_cloud;
     pcl::toROSMsg(*aligned, output_cloud);
@@ -134,7 +144,7 @@ bool DockDetector::detectDockICP(geometry_msgs::msg::Pose& dock_pose) {
 
     Eigen::Matrix4f tf = icp.getFinalTransformation();
     Eigen::Matrix4f extra_translation = Eigen::Matrix4f::Identity();
-    extra_translation(0, 3) = -0.11f;  // Translate -0.3 meters along x-axis
+    extra_translation(0, 3) = -0.1f;  // Translate -0.3 meters along x-axis
 
     // Compose transformations: apply extra translation after ICP alignment
     tf = tf * extra_translation;

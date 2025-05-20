@@ -11,6 +11,9 @@
 
 #include "autoserve_docking/controller.hpp"
 #include "autoserve_docking/dock_detector.hpp"
+#include "lifecycle_msgs/srv/change_state.hpp"
+#include "nav2_msgs/srv/manage_lifecycle_nodes.hpp"
+
 
 
 namespace autoserve_docking
@@ -37,7 +40,7 @@ private:
 
   geometry_msgs::msg::Pose current_pose_;
   geometry_msgs::msg::Pose goal_pose_;
-
+  geometry_msgs::msg::TransformStamped map_to_odom_;
   geometry_msgs::msg::Pose dock_pose_;
 
   std::shared_ptr<Controller> controller_;

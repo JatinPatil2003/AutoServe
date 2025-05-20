@@ -10,6 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav2_msgs REQUIRED)
 find_package(PCL REQUIRED COMPONENTS filters io common)
 find_package(pcl_conversions REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -19,6 +20,7 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
 
 # Include directories
 include_directories(include ${PCL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
@@ -37,8 +39,10 @@ ament_target_dependencies(docking_server
   tf2
   tf2_ros
   tf2_eigen
+  lifecycle_msgs
   tf2_geometry_msgs
   std_srvs
+  nav2_msgs
 )
 
 target_link_libraries(docking_server
