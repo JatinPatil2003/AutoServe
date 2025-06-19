@@ -5,6 +5,9 @@
 <xacro:include filename="$(find autoserve_description)/urdf/autoserve_gazebo.xacro" />
 <xacro:include filename="$(find autoserve_description)/urdf/autoserve.trans" />
 
+<!-- <xacro:include filename="$(find autoserve_description)/urdf/autoserve_ros2_control.xacro" /> -->
+
+
 <link name="base_footprint">
   <!-- <collision>
     <origin xyz="0.0 0.0 0.003" rpy="0 0 0"/>
@@ -17,7 +20,7 @@
 <link name="base_link">
   <inertial>
     <origin xyz="0.017764143959187594 -0.00010931568495259127 0.24169621947403908" rpy="0 0 0"/>
-    <mass value="10.036859574001216"/>
+    <mass value="30.036859574001216"/>
     <inertia ixx="0.822232" iyy="0.810255" izz="0.334887" ixy="-1.8e-05" iyz="0.000454" ixz="-0.000983"/>
   </inertial>
   <visual>
@@ -90,7 +93,7 @@
   </collision>
 </link>
 
-<link name="camera_link">
+<link name="depth_camera_1">
   <inertial>
     <origin xyz="0.011951472788559625 0.022747274204167237 -6.086448440437153e-05" rpy="0 0 0"/>
     <mass value="0.35132131581082054"/>
@@ -111,11 +114,11 @@
   </collision>
 </link>
 
-<link name="camera_link_optical"/>
+<link name="camera_link_1_optical"/>
 
-<joint name="camera2camera_1" type="fixed">
-  <parent link="camera_link"/>
-  <child link="camera_link_optical"/>
+<joint name="dcamera2camera_1" type="fixed">
+  <parent link="depth_camera_1"/>
+  <child link="camera_link_1_optical"/>
   <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
   <axis xyz="0 0 0"/>
 </joint>
@@ -290,7 +293,7 @@
 <joint name="base2camera_1" type="fixed">
   <origin xyz="0.2 -0.0 0.1705" rpy="0 0 0"/>
   <parent link="base_link"/>
-  <child link="camera_link"/>
+  <child link="depth_camera_1"/>
 </joint>
 
 <joint name="base2camera_2" type="fixed">

@@ -66,7 +66,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(gazebo_ros_dir, "launch", "gzserver.launch.py"),
         ),
-        launch_arguments={'world': world}.items()
+        launch_arguments={'world': world, 'verbose': 'true'}.items()
     )
 
     start_gazebo_client = IncludeLaunchDescription(

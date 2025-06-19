@@ -12,18 +12,18 @@
   <!-- Wheels -->
   <gazebo reference="left_wheel">
     <material>${wheels}</material>
-    <mu1>1000.0</mu1>
-    <mu2>1000.0</mu2>
-    <maxContacts>1</maxContacts>
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <maxContacts>10</maxContacts>
     <selfCollide>true</selfCollide>
     <gravity>true</gravity>
   </gazebo>
 
   <gazebo reference="right_wheel">
     <material>${wheels}</material>
-    <mu1>1000.0</mu1>
-    <mu2>1000.0</mu2>
-    <maxContacts>1</maxContacts>
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <maxContacts>10</maxContacts>
     <selfCollide>true</selfCollide>
     <gravity>true</gravity>
   </gazebo>
@@ -31,8 +31,8 @@
   <!-- Caster Wheels -->
   <gazebo reference="base_link">
     <material>${base_link}</material>
-    <mu1>0.1</mu1>
-    <mu2>0.1</mu2>
+    <mu1>0.25</mu1>
+    <mu2>0.25</mu2>
     <maxContacts>1</maxContacts>
     <selfCollide>true</selfCollide>
     <gravity>true</gravity>
@@ -81,7 +81,7 @@
   </gazebo>
     
   <!-- <gazebo>
-    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control_autoserve">
       <robot_param>robot_description</robot_param>
       <robot_param_node>robot_state_publisher</robot_param_node>
       <parameters>$(find autoserve_controller)/config/autoserve_controllers.yaml</parameters>
@@ -90,9 +90,6 @@
 
   <gazebo>
     <plugin name="diff_drive_control" filename="libgazebo_ros_diff_drive.so">
-      <!-- <ros>
-        <remapping>/cmd_vel:=/cmd_vel_new</remapping>
-      </ros> -->
 
       <update_rate>20</update_rate>
 
@@ -314,12 +311,12 @@
     </sensor>
   </gazebo>
 
-  <gazebo reference="camera_link">
+  <gazebo reference="depth_camera_1">
     <sensor name="camera" type="depth">
       <pose> 0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>10.0</update_rate>
-      <camera name="camera_link">
+      <camera name="depth_camera_2">
         <horizontal_fov>1.57</horizontal_fov>
         <image>
           <width>640</width>
@@ -335,7 +332,7 @@
         <baseline>0.2</baseline>
         <alwaysOn>true</alwaysOn>
         <updateRate>0.0</updateRate>
-        <frame_name>camera_link_optical</frame_name>
+        <frame_name>camera_link_1_optical</frame_name>
         <pointCloudCutoff>0.1</pointCloudCutoff>
         <pointCloudCutoffMax>5.0</pointCloudCutoffMax>
         <distortionK1>0</distortionK1>
