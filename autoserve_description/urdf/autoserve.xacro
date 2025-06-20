@@ -9,18 +9,18 @@
 
 
 <link name="base_footprint">
-  <!-- <collision>
+  <collision>
     <origin xyz="0.0 0.0 0.003" rpy="0 0 0"/>
     <geometry>
       <box size="0.4 0.20 0.005" />
     </geometry>
-  </collision> -->
+  </collision>
 </link>
 
 <link name="base_link">
   <inertial>
     <origin xyz="0.017764143959187594 -0.00010931568495259127 0.24169621947403908" rpy="0 0 0"/>
-    <mass value="30.036859574001216"/>
+    <mass value="2.036859574001216"/>
     <inertia ixx="0.822232" iyy="0.810255" izz="0.334887" ixy="-1.8e-05" iyz="0.000454" ixz="-0.000983"/>
   </inertial>
   <visual>
@@ -36,12 +36,12 @@
       <mesh filename="package://autoserve_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
-  <collision>
+  <!-- <collision>
     <origin xyz="0.0 0.0 0.003" rpy="0 0 0"/>
     <geometry>
       <box size="0.45 0.20 0.005" />
     </geometry>
-  </collision>
+  </collision> -->
 </link>
 
 <joint name="footprint2baselink" type="fixed">
