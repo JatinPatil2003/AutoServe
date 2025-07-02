@@ -10,7 +10,7 @@ from launch.conditions import IfCondition
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 
-MAP_NAME='cafe' 
+MAP_NAME='warehouse' 
 
 def generate_launch_description():
 

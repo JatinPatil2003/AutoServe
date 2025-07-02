@@ -88,7 +88,7 @@
     </plugin>
   </gazebo> -->
 
-  <!-- <gazebo>
+  <gazebo>
     <plugin name="diff_drive_control" filename="libgazebo_ros_diff_drive.so">
 
       <update_rate>20</update_rate>
@@ -108,7 +108,7 @@
       <robot_base_frame>base_footprint</robot_base_frame>
 
     </plugin>
-  </gazebo> -->
+  </gazebo>
 
   <gazebo reference="imu">
     <gravity>true</gravity>
