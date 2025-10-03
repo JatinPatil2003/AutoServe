@@ -114,7 +114,7 @@ def generate_launch_description():
     )
 
     nav2_config_path = PathJoinSubstitution(
-        [FindPackageShare('autoserve_navigation'), 'config', 'navigation_mppi.yaml']
+        [FindPackageShare('autoserve_navigation'), 'config', 'navigation_stvl.yaml']
     )
 
     autoserve_3dmapping_path = PathJoinSubstitution(

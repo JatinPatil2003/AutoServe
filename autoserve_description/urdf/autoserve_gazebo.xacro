@@ -318,7 +318,7 @@
     <sensor name="camera" type="depth">
       <pose> 0 0 0 0 0 0</pose>
       <visualize>true</visualize>
-      <update_rate>10.0</update_rate>
+      <update_rate>30.0</update_rate>
       <camera name="camera_link">
         <horizontal_fov>1.57</horizontal_fov>
         <image>
